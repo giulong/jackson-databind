@@ -5,6 +5,8 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
+
 /**
  * Abstract class that defines API for objects that provide value to
  * "inject" during deserialization. An instance of this object
@@ -80,7 +82,7 @@ public abstract class InjectableValues
                 final JacksonInject.Value injectableValue = ctxt.getAnnotationIntrospector()
                         .findInjectableValue(forProperty.getMember());
 
-                if (!injectableValue.getOptional()) {
+                if (!injectableValue.getOptional() && ctxt.isEnabled(FAIL_ON_UNKNOWN_INJECT_VALUE)) {
                     throw new IllegalArgumentException("No injectable id with value '" + key + "' " +
                             "found (for property '" + forProperty.getName() + "')");
                 }

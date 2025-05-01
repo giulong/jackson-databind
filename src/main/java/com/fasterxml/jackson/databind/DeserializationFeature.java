@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.databind;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.databind.cfg.ConfigFeature;
 import com.fasterxml.jackson.databind.exc.InvalidNullException;
 
@@ -336,6 +337,20 @@ public enum DeserializationFeature implements ConfigFeature
      * @since 2.17
      */
     FAIL_ON_UNEXPECTED_VIEW_PROPERTIES(false),
+
+    /**
+     * Feature that determines the handling of injected properties during deserialization.
+     *<p>
+     * When enabled, if an injected property is not encountered during deserialization,
+     * an exception is thrown.
+     * When disabled, no exception is thrown.
+     * @see JacksonInject#optional() to configure the same behavior on single properties,
+     *<p>
+     * In Jackson 2.x, this feature is enabled by default to maintain backward compatibility.
+     *
+     * @since 2.20
+     */
+    FAIL_ON_UNKNOWN_INJECT_VALUE(true),
 
     /*
     /******************************************************

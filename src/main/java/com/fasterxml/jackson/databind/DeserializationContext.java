@@ -39,6 +39,8 @@ import com.fasterxml.jackson.databind.type.LogicalType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.*;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
+
 /**
  * Context for the process of deserialization a single root-level value.
  * Used to allow passing in configuration settings and reusable temporary
@@ -472,7 +474,7 @@ public abstract class DeserializationContext
             final JacksonInject.Value injectableValue = getAnnotationIntrospector()
                     .findInjectableValue(forProperty.getMember());
 
-            return injectableValue.getOptional()
+            return injectableValue.getOptional() || !isEnabled(FAIL_ON_UNKNOWN_INJECT_VALUE)
                     ? JacksonInject.Value.empty()
                     : reportBadDefinition(ClassUtil.classOf(valueId), String.format(
                             "No 'injectableValues' configured, " +

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.fasterxml.jackson.databind.testutil.DatabindTestUtil;
 import org.junit.jupiter.api.Test;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -33,10 +34,13 @@ class JacksonInject3072Test extends DatabindTestUtil {
         }
     }
 
+    private ObjectReader newReader() {
+        return newJsonMapper().readerFor(Dto.class);
+    }
+
     @Test
     void testOptionalFieldFound() {
-        ObjectReader reader = newJsonMapper()
-                .readerFor(Dto.class)
+        ObjectReader reader = newReader()
                 .with(new InjectableValues.Std()
                         .addValue("id", "idValue")
                         .addValue("optionalField", "optionalFieldValue"));
@@ -49,8 +53,7 @@ class JacksonInject3072Test extends DatabindTestUtil {
 
     @Test
     void testOptionalFieldNotFound() {
-        ObjectReader reader = newJsonMapper()
-                .readerFor(Dto.class)
+        ObjectReader reader = newReader()
                 .with(new InjectableValues.Std()
                         .addValue("id", "idValue"));
 
@@ -62,8 +65,7 @@ class JacksonInject3072Test extends DatabindTestUtil {
 
     @Test
     void testMandatoryFieldNotFound() {
-        ObjectReader reader = newJsonMapper()
-                .readerFor(Dto.class);
+        ObjectReader reader = newReader();
 
         InvalidDefinitionException exception = assertThrows(
                 InvalidDefinitionException.class, () -> reader.readValue("{}"));
@@ -74,8 +76,7 @@ class JacksonInject3072Test extends DatabindTestUtil {
 
     @Test
     void testMandatoryFieldNotFoundWithInjectableValues() {
-        ObjectReader reader = newJsonMapper()
-                .readerFor(Dto.class)
+        ObjectReader reader = newReader()
                 .with(new InjectableValues.Std());
 
         IllegalArgumentException exception = assertThrows(
@@ -83,5 +84,41 @@ class JacksonInject3072Test extends DatabindTestUtil {
 
         assertEquals("No injectable id with value 'id' found (for property 'id')",
                 exception.getMessage());
+    }
+
+    @Test
+    void testMandatoryFieldNotFoundWithoutDeserializationFeature() {
+        ObjectReader reader = newReader()
+                .with(new InjectableValues.Std()
+                        .addValue("id", "idValue"))
+                .without(FAIL_ON_UNKNOWN_INJECT_VALUE);
+
+        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+
+        assertEquals("idValue", dto.id);
+        assertNull(dto.optionalField);
+    }
+
+    @Test
+    void testMandatoryFieldNotFoundWithInjectableValuesWithoutDeserializationFeature() {
+        ObjectReader reader = newReader()
+                .with(new InjectableValues.Std())
+                .without(FAIL_ON_UNKNOWN_INJECT_VALUE);
+
+        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+
+        assertNull(dto.id);
+        assertNull(dto.optionalField);
+    }
+
+    @Test
+    void testOptionalFieldNotFoundWithoutInjectableValuesWithDeserializationFeature() {
+        ObjectReader reader = newReader()
+                .without(FAIL_ON_UNKNOWN_INJECT_VALUE);
+
+        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+
+        assertNull(dto.id);
+        assertNull(dto.optionalField);
     }
 }
