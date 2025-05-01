@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.ObjectIdGenerator;
 import com.fasterxml.jackson.annotation.ObjectIdResolver;
@@ -468,8 +469,14 @@ public abstract class DeserializationContext
         throws JsonMappingException
     {
         if (_injectableValues == null) {
-            return reportBadDefinition(ClassUtil.classOf(valueId), String.format(
-"No 'injectableValues' configured, cannot inject value with id [%s]", valueId));
+            final JacksonInject.Value injectableValue = getAnnotationIntrospector()
+                    .findInjectableValue(forProperty.getMember());
+
+            return injectableValue.getOptional()
+                    ? JacksonInject.Value.empty()
+                    : reportBadDefinition(ClassUtil.classOf(valueId), String.format(
+                            "No 'injectableValues' configured, " +
+                                    "cannot inject value with id [%s]", valueId));
         }
         return _injectableValues.findInjectableValue(valueId, this, forProperty, beanInstance);
     }

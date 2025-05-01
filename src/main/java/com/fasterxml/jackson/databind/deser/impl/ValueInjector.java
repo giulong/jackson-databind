@@ -2,6 +2,7 @@ package com.fasterxml.jackson.databind.deser.impl;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 
@@ -48,6 +49,9 @@ public class ValueInjector
     public void inject(DeserializationContext context, Object beanInstance)
         throws IOException
     {
-        _member.setValue(beanInstance, findValue(context, beanInstance));
+        final Object value = findValue(context, beanInstance);
+        if (!JacksonInject.Value.empty().equals(value)) {
+            _member.setValue(beanInstance, value);
+        }
     }
 }
