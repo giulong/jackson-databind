@@ -484,7 +484,7 @@ public abstract class DeserializationContext
                 return JacksonInject.Value.empty();
             }
             return reportBadDefinition(ClassUtil.classOf(valueId), String.format(
-                    "No 'injectableValues' configured, cannot inject value with id [%s]", valueId));
+"No 'injectableValues' configured, cannot inject value with id [%s]", valueId));
         }
         return _injectableValues.findInjectableValue(valueId, this, forProperty, beanInstance);
     }
