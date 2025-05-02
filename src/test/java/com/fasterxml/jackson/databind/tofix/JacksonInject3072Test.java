@@ -82,7 +82,7 @@ class JacksonInject3072Test extends DatabindTestUtil {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class, () -> reader.readValue("{}"));
 
-        assertEquals("No injectable id with value 'id' found (for property 'id')",
+        assertEquals("No injectable value with id 'id' found (for property 'id')",
                 exception.getMessage());
     }
 
