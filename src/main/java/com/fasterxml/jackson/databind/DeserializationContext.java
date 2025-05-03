@@ -465,28 +465,18 @@ public abstract class DeserializationContext
     public final JsonParser getParser() { return _parser; }
 
     public final Object findInjectableValue(Object valueId,
-            BeanProperty forProperty, Object beanInstance)
+            BeanProperty forProperty, Object beanInstance, Boolean optional)
         throws JsonMappingException
     {
         if (_injectableValues == null) {
-            final JacksonInject.Value injectableValue = getAnnotationIntrospector()
-                    .findInjectableValue(forProperty.getMember());
-            // Default optional-or-not from global setting:
-            boolean optional = !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
-            // but may be overridden on per-property basis:
-            if (injectableValue != null) {
-                // `null` means "use defaults" (global setting)
-                if (injectableValue.getOptional() != null) {
-                    optional = injectableValue.getOptional();
-                }
-            }
-            if (optional) {
+            if (!isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)
+                    || Boolean.TRUE.equals(optional)) {
                 return JacksonInject.Value.empty();
             }
             return reportBadDefinition(ClassUtil.classOf(valueId), String.format(
 "No 'injectableValues' configured, cannot inject value with id [%s]", valueId));
         }
-        return _injectableValues.findInjectableValue(valueId, this, forProperty, beanInstance);
+        return _injectableValues.findInjectableValue(valueId, this, forProperty, beanInstance, optional);
     }
 
     /**

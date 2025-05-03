@@ -241,7 +241,7 @@ public class BeanDeserializerBuilder
 
     public void addInjectable(PropertyName propName, JavaType propType,
             Annotations contextAnnotations, AnnotatedMember member,
-            Object valueId)
+            Object valueId, Boolean optional)
         throws JsonMappingException
     {
         if (_injectables == null) {
@@ -254,7 +254,7 @@ public class BeanDeserializerBuilder
                 _handleBadAccess(e);
             }
         }
-        _injectables.add(new ValueInjector(propName, propType, member, valueId));
+        _injectables.add(new ValueInjector(propName, propType, member, valueId, optional));
     }
 
     /**
