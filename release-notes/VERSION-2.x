@@ -12,6 +12,11 @@ Project: jackson-databind
   serialization
 - Generate SBOMs [JSTEP-14]
 
+2.19.1 (not yet released)
+
+#5139: In `CollectionDeserializer`, `JsonSetter.contentNulls` is sometimes ignored
+ (contributed by @wrongwrong)
+
 2.19.0 (24-Apr-2025)
 
 #1467: Support `@JsonUnwrapped` with `@JsonCreator`
@@ -102,7 +107,7 @@ Project: jackson-databind
 #5069: Add copy-constructor for `MappingIterator`
  (contributed by @wrongwrong)
 
-2.18.4 (not yet released)
+2.18.4 (06-May-2025)
 
 #4628: `@JsonIgnore` and `@JsonProperty.access=READ_ONLY` on Record property
   ignored for deserialization
