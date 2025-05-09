@@ -22,11 +22,27 @@ public class ValueInjector
      */
     protected final Object _valueId;
 
+    /**
+     * Flag used for configuring the behavior when the value to inject is not found
+     */
+    protected final Boolean _optional;
+
     public ValueInjector(PropertyName propName, JavaType type,
-            AnnotatedMember mutator, Object valueId)
+                         AnnotatedMember mutator, Object valueId, Boolean optional)
     {
         super(propName, type, null, mutator, PropertyMetadata.STD_OPTIONAL);
         _valueId = valueId;
+        _optional = optional;
+    }
+
+    /**
+     * @deprecated in 2.20 (remove from 3.0)
+     */
+    @Deprecated
+    public ValueInjector(PropertyName propName, JavaType type,
+            AnnotatedMember mutator, Object valueId)
+    {
+        this(propName, type, mutator, valueId, null);
     }
 
     /**
@@ -43,7 +59,7 @@ public class ValueInjector
     public Object findValue(DeserializationContext context, Object beanInstance)
         throws JsonMappingException
     {
-        return context.findInjectableValue(_valueId, this, beanInstance);
+        return context.findInjectableValue(_valueId, this, beanInstance, _optional);
     }
 
     public void inject(DeserializationContext context, Object beanInstance)

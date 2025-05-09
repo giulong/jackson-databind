@@ -673,7 +673,8 @@ public class StdValueInstantiator
                 if (prop == null) { // delegate
                     args[i] = delegate;
                 } else { // nope, injectable:
-                    args[i] = ctxt.findInjectableValue(prop.getInjectableValueId(), prop, null);
+                    args[i] = ctxt.findInjectableValue(prop.getInjectableValueId(), prop, null,
+                            null);
                 }
             }
             // and then try calling with full set of arguments

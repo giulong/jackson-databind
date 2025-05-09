@@ -5,6 +5,8 @@ import java.util.*;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
+
 /**
  * Abstract class that defines API for objects that provide value to
  * "inject" during deserialization. An instance of this object
@@ -26,7 +28,13 @@ public abstract class InjectableValues
      *    if available; null if bean has not yet been constructed.
      */
     public abstract Object findInjectableValue(Object valueId, DeserializationContext ctxt,
-            BeanProperty forProperty, Object beanInstance) throws JsonMappingException;
+            BeanProperty forProperty, Object beanInstance, Boolean optional) throws JsonMappingException;
+
+    /**
+     * @deprecated in 2.20
+     */
+    public abstract Object findInjectableValue(Object valueId, DeserializationContext ctxt,
+                                               BeanProperty forProperty, Object beanInstance) throws JsonMappingException;
 
     /*
     /**********************************************************
@@ -66,7 +74,7 @@ public abstract class InjectableValues
 
         @Override
         public Object findInjectableValue(Object valueId, DeserializationContext ctxt,
-                BeanProperty forProperty, Object beanInstance) throws JsonMappingException
+                BeanProperty forProperty, Object beanInstance, Boolean optional) throws JsonMappingException
         {
             if (!(valueId instanceof String)) {
                 ctxt.reportBadDefinition(ClassUtil.classOf(valueId),
@@ -76,26 +84,23 @@ public abstract class InjectableValues
             }
             String key = (String) valueId;
             Object ob = _values.get(key);
-            if (ob == null && !_values.containsKey(key)) {
-                final JacksonInject.Value injectableValue = ctxt.getAnnotationIntrospector()
-                        .findInjectableValue(forProperty.getMember());
-                // Default optional-or-not from global setting:
-                boolean optional = !ctxt.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
-                // but may be overridden on per-property basis:
-                if (injectableValue != null) {
-                    // `null` means "use defaults" (global setting)
-                    if (injectableValue.getOptional() != null) {
-                        optional = injectableValue.getOptional();
-                    }
-                }
-
-                
-                if (!optional) {
-                    throw new IllegalArgumentException("No injectable value with id '" + key + "' " +
-                            "found (for property '" + forProperty.getName() + "')");
-                }
+            if (ob == null && !_values.containsKey(key)
+                    && !Boolean.TRUE.equals(optional)
+                    && ctxt.isEnabled(FAIL_ON_UNKNOWN_INJECT_VALUE)) {
+                throw new IllegalArgumentException("No injectable value with id '" + key + "' " +
+                        "found (for property '" + forProperty.getName() + "')");
             }
             return ob;
+        }
+
+        /**
+         * @deprecated in 2.20
+         */
+        @Override
+        public Object findInjectableValue(Object valueId, DeserializationContext ctxt,
+                                          BeanProperty forProperty, Object beanInstance) throws JsonMappingException
+        {
+            return this.findInjectableValue(valueId, ctxt, forProperty, beanInstance, null);
         }
     }
 }
