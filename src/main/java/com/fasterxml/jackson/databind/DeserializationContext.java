@@ -39,6 +39,8 @@ import com.fasterxml.jackson.databind.type.LogicalType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.*;
 
+import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
+
 /**
  * Context for the process of deserialization a single root-level value.
  * Used to allow passing in configuration settings and reusable temporary
@@ -469,14 +471,23 @@ public abstract class DeserializationContext
         throws JsonMappingException
     {
         if (_injectableValues == null) {
-            if (!isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)
-                    || Boolean.TRUE.equals(optional)) {
+            if (Boolean.TRUE.equals(optional) || !isEnabled(FAIL_ON_UNKNOWN_INJECT_VALUE)) {
                 return JacksonInject.Value.empty();
             }
             return reportBadDefinition(ClassUtil.classOf(valueId), String.format(
 "No 'injectableValues' configured, cannot inject value with id [%s]", valueId));
         }
         return _injectableValues.findInjectableValue(valueId, this, forProperty, beanInstance, optional);
+    }
+
+    /**
+     * @deprecated in 2.20
+     */
+    public final Object findInjectableValue(Object valueId,
+                                            BeanProperty forProperty, Object beanInstance)
+            throws JsonMappingException
+    {
+        return this.findInjectableValue(valueId, forProperty, beanInstance, null);
     }
 
     /**

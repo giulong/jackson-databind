@@ -705,6 +705,11 @@ public class IntrospectorPairTest extends DatabindTestUtil
             }
             return null;
         }
+
+        @Override
+        public Object findInjectableValue(Object valueId, DeserializationContext ctxt, BeanProperty forProperty, Object beanInstance) {
+            return this.findInjectableValue(valueId, ctxt, forProperty, beanInstance, null);
+        }
     }
 
     enum SimpleEnum { ONE, TWO }

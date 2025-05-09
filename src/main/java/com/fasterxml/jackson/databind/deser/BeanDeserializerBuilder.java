@@ -258,6 +258,17 @@ public class BeanDeserializerBuilder
     }
 
     /**
+     * @deprecated in 2.20
+     */
+    public void addInjectable(PropertyName propName, JavaType propType,
+                              Annotations contextAnnotations, AnnotatedMember member,
+                              Object valueId)
+            throws JsonMappingException
+    {
+        this.addInjectable(propName, propType, contextAnnotations, member, valueId, null);
+    }
+
+    /**
      * Method that will add property name as one of properties that can
      * be ignored if not recognized.
      */

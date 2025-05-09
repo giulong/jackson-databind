@@ -813,6 +813,7 @@ ClassUtil.name(name), ((AnnotatedParameter) m).getIndex());
         Map<Object, AnnotatedMember> raw = beanDesc.findInjectables();
         if (raw != null) {
             final AnnotationIntrospector introspector = ctxt.getAnnotationIntrospector();
+
             for (Map.Entry<Object, AnnotatedMember> entry : raw.entrySet()) {
                 AnnotatedMember m = entry.getValue();
                 final JacksonInject.Value injectableValue = introspector.findInjectableValue(m);
