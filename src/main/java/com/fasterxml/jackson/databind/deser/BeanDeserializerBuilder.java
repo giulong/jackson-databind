@@ -239,6 +239,9 @@ public class BeanDeserializerBuilder
         */
     }
 
+    /**
+     * @since 2.20
+     */
     public void addInjectable(PropertyName propName, JavaType propType,
             Annotations contextAnnotations, AnnotatedMember member,
             Object valueId, Boolean optional)
@@ -260,6 +263,7 @@ public class BeanDeserializerBuilder
     /**
      * @deprecated in 2.20
      */
+    @Deprecated // since 2.20
     public void addInjectable(PropertyName propName, JavaType propType,
                               Annotations contextAnnotations, AnnotatedMember member,
                               Object valueId)

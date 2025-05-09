@@ -466,6 +466,9 @@ public abstract class DeserializationContext
      */
     public final JsonParser getParser() { return _parser; }
 
+    /**
+     * @since 2.20
+     */
     public final Object findInjectableValue(Object valueId,
             BeanProperty forProperty, Object beanInstance, Boolean optional)
         throws JsonMappingException
@@ -483,6 +486,7 @@ public abstract class DeserializationContext
     /**
      * @deprecated in 2.20
      */
+    @Deprecated // since 2.20
     public final Object findInjectableValue(Object valueId,
                                             BeanProperty forProperty, Object beanInstance)
             throws JsonMappingException

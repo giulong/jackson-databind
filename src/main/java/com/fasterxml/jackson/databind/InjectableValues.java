@@ -2,7 +2,6 @@ package com.fasterxml.jackson.databind;
 
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
 import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
@@ -26,6 +25,8 @@ public abstract class InjectableValues
      * @param forProperty Bean property in which value is to be injected
      * @param beanInstance Bean instance that contains property to inject,
      *    if available; null if bean has not yet been constructed.
+     * @param optional Flag used for configuring the behavior when the value
+     *    to inject is not found
      */
     public abstract Object findInjectableValue(Object valueId, DeserializationContext ctxt,
             BeanProperty forProperty, Object beanInstance, Boolean optional) throws JsonMappingException;
@@ -33,8 +34,9 @@ public abstract class InjectableValues
     /**
      * @deprecated in 2.20
      */
+    @Deprecated // since 2.20
     public abstract Object findInjectableValue(Object valueId, DeserializationContext ctxt,
-                                               BeanProperty forProperty, Object beanInstance) throws JsonMappingException;
+            BeanProperty forProperty, Object beanInstance) throws JsonMappingException;
 
     /*
     /**********************************************************
@@ -72,6 +74,9 @@ public abstract class InjectableValues
             return this;
         }
 
+        /**
+         * @since 2.20
+         */
         @Override
         public Object findInjectableValue(Object valueId, DeserializationContext ctxt,
                 BeanProperty forProperty, Object beanInstance, Boolean optional) throws JsonMappingException
@@ -97,6 +102,7 @@ public abstract class InjectableValues
          * @deprecated in 2.20
          */
         @Override
+        @Deprecated // since 2.20
         public Object findInjectableValue(Object valueId, DeserializationContext ctxt,
                                           BeanProperty forProperty, Object beanInstance) throws JsonMappingException
         {

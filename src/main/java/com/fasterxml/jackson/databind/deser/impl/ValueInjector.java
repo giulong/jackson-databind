@@ -27,8 +27,11 @@ public class ValueInjector
      */
     protected final Boolean _optional;
 
+    /**
+     * @since 2.20
+     */
     public ValueInjector(PropertyName propName, JavaType type,
-                         AnnotatedMember mutator, Object valueId, Boolean optional)
+            AnnotatedMember mutator, Object valueId, Boolean optional)
     {
         super(propName, type, null, mutator, PropertyMetadata.STD_OPTIONAL);
         _valueId = valueId;
@@ -38,7 +41,7 @@ public class ValueInjector
     /**
      * @deprecated in 2.20 (remove from 3.0)
      */
-    @Deprecated
+    @Deprecated // since 2.20
     public ValueInjector(PropertyName propName, JavaType type,
             AnnotatedMember mutator, Object valueId)
     {
