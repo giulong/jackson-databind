@@ -4,8 +4,6 @@ import java.util.*;
 
 import com.fasterxml.jackson.databind.util.ClassUtil;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
-
 /**
  * Abstract class that defines API for objects that provide value to
  * "inject" during deserialization. An instance of this object
@@ -89,11 +87,12 @@ public abstract class InjectableValues
             }
             String key = (String) valueId;
             Object ob = _values.get(key);
-            if (ob == null && !_values.containsKey(key)
-                    && !Boolean.TRUE.equals(optional)
-                    && ctxt.isEnabled(FAIL_ON_UNKNOWN_INJECT_VALUE)) {
-                throw new IllegalArgumentException("No injectable value with id '" + key + "' " +
-                        "found (for property '" + forProperty.getName() + "')");
+            if (ob == null && !_values.containsKey(key)) {
+                if (!Boolean.TRUE.equals(optional)
+                    && ctxt.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)) {
+                    throw new IllegalArgumentException("No injectable value with id '" + key + "' " +
+                            "found (for property '" + forProperty.getName() + "')");
+                }
             }
             return ob;
         }
@@ -104,7 +103,7 @@ public abstract class InjectableValues
         @Override
         @Deprecated // since 2.20
         public Object findInjectableValue(Object valueId, DeserializationContext ctxt,
-                                          BeanProperty forProperty, Object beanInstance) throws JsonMappingException
+                BeanProperty forProperty, Object beanInstance) throws JsonMappingException
         {
             return this.findInjectableValue(valueId, ctxt, forProperty, beanInstance, null);
         }

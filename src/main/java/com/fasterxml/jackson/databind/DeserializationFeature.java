@@ -340,13 +340,15 @@ public enum DeserializationFeature implements ConfigFeature
     /**
      * Feature that determines the handling of injected properties during deserialization.
      *<p>
-     * When enabled, if an injected property is not encountered during deserialization,
-     * an exception is thrown.
+     * When enabled, if an injected property without matching value is encountered
+     * during deserialization,  an exception is thrown.
      * When disabled, no exception is thrown.
-     * @see JacksonInject#optional() to configure the same behavior on single properties,
+     * See {@link JacksonInject#optional()} for per-property override
+     * of this setting.
      *<p>
-     * In Jackson 2.x, this feature is enabled by default to maintain backwards-compatibility.
+     * This feature is enabled by default to maintain backwards-compatibility.
      *
+     * @see JacksonInject#optional()
      * @since 2.20
      */
     FAIL_ON_UNKNOWN_INJECT_VALUE(true),

@@ -23,7 +23,9 @@ public class ValueInjector
     protected final Object _valueId;
 
     /**
-     * Flag used for configuring the behavior when the value to inject is not found
+     * Flag used for configuring the behavior when the value to inject is not found.
+     *
+     * @since 2.20
      */
     protected final Boolean _optional;
 
@@ -46,17 +48,6 @@ public class ValueInjector
             AnnotatedMember mutator, Object valueId)
     {
         this(propName, type, mutator, valueId, null);
-    }
-
-    /**
-     * @deprecated in 2.9 (remove from 3.0)
-     */
-    @Deprecated // see [databind#1835]
-    public ValueInjector(PropertyName propName, JavaType type,
-            com.fasterxml.jackson.databind.util.Annotations contextAnnotations, // removed from later versions
-            AnnotatedMember mutator, Object valueId)
-    {
-        this(propName, type, mutator, valueId);
     }
 
     public Object findValue(DeserializationContext context, Object beanInstance)

@@ -248,7 +248,7 @@ public class BeanDeserializerBuilder
         throws JsonMappingException
     {
         if (_injectables == null) {
-            _injectables = new ArrayList<ValueInjector>();
+            _injectables = new ArrayList<>();
         }
         if ( _config.canOverrideAccessModifiers()) {
             try {
@@ -265,9 +265,9 @@ public class BeanDeserializerBuilder
      */
     @Deprecated // since 2.20
     public void addInjectable(PropertyName propName, JavaType propType,
-                              Annotations contextAnnotations, AnnotatedMember member,
-                              Object valueId)
-            throws JsonMappingException
+            Annotations contextAnnotations, AnnotatedMember member,
+            Object valueId)
+        throws JsonMappingException
     {
         this.addInjectable(propName, propType, contextAnnotations, member, valueId, null);
     }

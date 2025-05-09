@@ -13,11 +13,7 @@ import com.fasterxml.jackson.annotation.ObjectIdResolver;
 
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.core.util.JacksonFeatureSet;
-import com.fasterxml.jackson.databind.cfg.CoercionAction;
-import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
-import com.fasterxml.jackson.databind.cfg.ContextAttributes;
-import com.fasterxml.jackson.databind.cfg.DatatypeFeature;
-import com.fasterxml.jackson.databind.cfg.DatatypeFeatures;
+import com.fasterxml.jackson.databind.cfg.*;
 import com.fasterxml.jackson.databind.deser.*;
 import com.fasterxml.jackson.databind.deser.impl.ObjectIdReader;
 import com.fasterxml.jackson.databind.deser.impl.ReadableObjectId;
@@ -38,8 +34,6 @@ import com.fasterxml.jackson.databind.node.TreeTraversingParser;
 import com.fasterxml.jackson.databind.type.LogicalType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.*;
-
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
 
 /**
  * Context for the process of deserialization a single root-level value.
@@ -474,7 +468,10 @@ public abstract class DeserializationContext
         throws JsonMappingException
     {
         if (_injectableValues == null) {
-            if (Boolean.TRUE.equals(optional) || !isEnabled(FAIL_ON_UNKNOWN_INJECT_VALUE)) {
+            // `optional` comes from property annotation (if any); has precedence
+            // over global setting
+            if ((optional != null && optional)
+                    || !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)) {
                 return JacksonInject.Value.empty();
             }
             return reportBadDefinition(ClassUtil.classOf(valueId), String.format(
@@ -488,10 +485,10 @@ public abstract class DeserializationContext
      */
     @Deprecated // since 2.20
     public final Object findInjectableValue(Object valueId,
-                                            BeanProperty forProperty, Object beanInstance)
-            throws JsonMappingException
+            BeanProperty forProperty, Object beanInstance)
+        throws JsonMappingException
     {
-        return this.findInjectableValue(valueId, forProperty, beanInstance, null);
+        return findInjectableValue(valueId, forProperty, beanInstance, null);
     }
 
     /**
