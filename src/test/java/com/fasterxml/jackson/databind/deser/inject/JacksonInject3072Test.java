@@ -1,63 +1,58 @@
 package com.fasterxml.jackson.databind.deser.inject;
 
+import org.junit.jupiter.api.Test;
+
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.OptBoolean;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.exc.InvalidDefinitionException;
 import com.fasterxml.jackson.databind.testutil.DatabindTestUtil;
-import org.junit.jupiter.api.Test;
 
-import static com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class JacksonInject3072Test extends DatabindTestUtil {
-
+class JacksonInject3072Test extends DatabindTestUtil
+{
     static class Dto {
-
         @JacksonInject("id")
         String id;
 
         @JacksonInject(value = "optionalField", optional = OptBoolean.TRUE)
         String optionalField;
 
-        @SuppressWarnings("unused")
         public String getId() {
             return id;
         }
 
-        @SuppressWarnings("unused")
         public String getOptionalField() {
             return optionalField;
         }
     }
 
-    private ObjectReader newReader() {
-        return newJsonMapper().readerFor(Dto.class);
-    }
+    private final ObjectReader READER = newJsonMapper().readerFor(Dto.class);
 
     @Test
-    void testOptionalFieldFound() {
-        ObjectReader reader = newReader()
+    void testOptionalFieldFound() throws Exception {
+        ObjectReader reader = READER
                 .with(new InjectableValues.Std()
                         .addValue("id", "idValue")
                         .addValue("optionalField", "optionalFieldValue"));
 
-        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+        Dto dto = reader.readValue("{}");
 
         assertEquals("idValue", dto.id);
         assertEquals("optionalFieldValue", dto.optionalField);
     }
 
     @Test
-    void testOptionalFieldNotFound() {
-        ObjectReader reader = newReader()
+    void testOptionalFieldNotFound() throws Exception {
+        ObjectReader reader = READER
                 .with(new InjectableValues.Std()
                         .addValue("id", "idValue"));
 
-        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+        Dto dto = reader.readValue("{}");
 
         assertEquals("idValue", dto.id);
         assertNull(dto.optionalField);
@@ -65,7 +60,7 @@ class JacksonInject3072Test extends DatabindTestUtil {
 
     @Test
     void testMandatoryFieldNotFound() {
-        ObjectReader reader = newReader();
+        ObjectReader reader = READER;
 
         InvalidDefinitionException exception = assertThrows(
                 InvalidDefinitionException.class, () -> reader.readValue("{}"));
@@ -76,7 +71,7 @@ class JacksonInject3072Test extends DatabindTestUtil {
 
     @Test
     void testMandatoryFieldNotFoundWithInjectableValues() {
-        ObjectReader reader = newReader()
+        ObjectReader reader = READER
                 .with(new InjectableValues.Std());
 
         IllegalArgumentException exception = assertThrows(
@@ -87,36 +82,36 @@ class JacksonInject3072Test extends DatabindTestUtil {
     }
 
     @Test
-    void testMandatoryFieldNotFoundWithoutDeserializationFeature() {
-        ObjectReader reader = newReader()
+    void testMandatoryFieldNotFoundWithoutDeserializationFeature() throws Exception {
+        ObjectReader reader = READER
                 .with(new InjectableValues.Std()
                         .addValue("id", "idValue"))
-                .without(FAIL_ON_UNKNOWN_INJECT_VALUE);
+                .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
 
-        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+        Dto dto = reader.readValue("{}");
 
         assertEquals("idValue", dto.id);
         assertNull(dto.optionalField);
     }
 
     @Test
-    void testMandatoryFieldNotFoundWithInjectableValuesWithoutDeserializationFeature() {
-        ObjectReader reader = newReader()
+    void testMandatoryFieldNotFoundWithInjectableValuesWithoutDeserializationFeature() throws Exception {
+        ObjectReader reader = READER
                 .with(new InjectableValues.Std())
-                .without(FAIL_ON_UNKNOWN_INJECT_VALUE);
+                .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
 
-        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+        Dto dto = reader.readValue("{}");
 
         assertNull(dto.id);
         assertNull(dto.optionalField);
     }
 
     @Test
-    void testOptionalFieldNotFoundWithoutInjectableValuesWithDeserializationFeature() {
-        ObjectReader reader = newReader()
-                .without(FAIL_ON_UNKNOWN_INJECT_VALUE);
+    void testOptionalFieldNotFoundWithoutInjectableValuesWithDeserializationFeature() throws Exception {
+        ObjectReader reader = READER
+                .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
 
-        Dto dto = assertDoesNotThrow(() -> reader.readValue("{}"));
+        Dto dto = reader.readValue("{}");
 
         assertNull(dto.id);
         assertNull(dto.optionalField);
