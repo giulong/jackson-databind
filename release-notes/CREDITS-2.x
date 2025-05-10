@@ -1222,7 +1222,6 @@ Lavender Shannon (retrodaredevil@github)
   * Requested #3072: Allow specifying `@JacksonInject` does not fail when there's no
     corresponding value
   (2.20.0)
- (requested by Lavender S)
 
 Daniel Hrabovcak (TheSpiritXIII@github)
   * Reported #2796: `TypeFactory.constructType()` does not take `TypeBindings` correctly
