@@ -75,7 +75,7 @@ class JacksonInject3072Test extends DatabindTestUtil
 
     // Test for case of `optional = OptBoolean.FALSE`
     @Test
-    void testRequiredAnnotatedField() {
+    void testRequiredAnnotatedField() throws Exception {
         // Should also fail even if DeserFeature disabled, if annotated
         ObjectReader reader = READER.forType(DtoWithRequired.class)
             .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
@@ -95,6 +95,12 @@ class JacksonInject3072Test extends DatabindTestUtil
 
         assertThat(exception.getMessage())
              .startsWith("No injectable value with id 'requiredValue' found (for property 'requiredField')");
+
+        // And finally, work if value injected
+        ObjectReader reader3 = reader.with(new InjectableValues.Std()
+                .addValue("requiredValue", "FOO"));
+        DtoWithRequired req = reader3.readValue("{}");
+        assertEquals("FOO", req.requiredField);
     }
 
     @Test
