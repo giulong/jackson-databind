@@ -77,7 +77,8 @@ public abstract class InjectableValues
          */
         @Override
         public Object findInjectableValue(Object valueId, DeserializationContext ctxt,
-                BeanProperty forProperty, Object beanInstance, Boolean optional) throws JsonMappingException
+                BeanProperty forProperty, Object beanInstance, Boolean optional)
+            throws JsonMappingException
         {
             if (!(valueId instanceof String)) {
                 ctxt.reportBadDefinition(ClassUtil.classOf(valueId),
@@ -88,10 +89,12 @@ public abstract class InjectableValues
             String key = (String) valueId;
             Object ob = _values.get(key);
             if (ob == null && !_values.containsKey(key)) {
-                if (!Boolean.TRUE.equals(optional)
-                    && ctxt.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)) {
-                    throw new IllegalArgumentException("No injectable value with id '" + key + "' " +
-                            "found (for property '" + forProperty.getName() + "')");
+                if (Boolean.FALSE.equals(optional)
+                        || ((optional == null)
+                                && ctxt.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE))) {
+                    return ctxt.reportBadDefinition(ClassUtil.classOf(valueId), String.format(
+                            "No injectable value with id '" + key + "' " +
+                            "found (for property '" + forProperty.getName() + "')"));
                 }
             }
             return ob;

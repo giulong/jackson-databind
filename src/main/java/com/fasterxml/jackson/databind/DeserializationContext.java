@@ -469,13 +469,13 @@ public abstract class DeserializationContext
     {
         if (_injectableValues == null) {
             // `optional` comes from property annotation (if any); has precedence
-            // over global setting
+            // over global setting.
             if (Boolean.TRUE.equals(optional)
                     || (optional == null && !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE))) {
                 return JacksonInject.Value.empty();
             }
             return reportBadDefinition(ClassUtil.classOf(valueId), String.format(
-"No 'injectableValues' configured, cannot inject value with id [%s]", valueId));
+"No 'injectableValues' configured, cannot inject value with id '%s'", valueId));
         }
         return _injectableValues.findInjectableValue(valueId, this, forProperty, beanInstance, optional);
     }
