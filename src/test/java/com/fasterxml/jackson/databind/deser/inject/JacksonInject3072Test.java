@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class JacksonInject3072Test extends DatabindTestUtil
 {
-    static class Dto {
+    static class DtoWithOptional {
         @JacksonInject("id")
         String id;
 
@@ -31,7 +31,12 @@ class JacksonInject3072Test extends DatabindTestUtil
         }
     }
 
-    private final ObjectReader READER = newJsonMapper().readerFor(Dto.class);
+    static class DtoWithRequired {
+        @JacksonInject(value = "requiredField", optional = OptBoolean.FALSE)
+        public String requiredField;
+    }
+
+    private final ObjectReader READER = newJsonMapper().readerFor(DtoWithOptional.class);
 
     @Test
     void testOptionalFieldFound() throws Exception {
@@ -40,7 +45,7 @@ class JacksonInject3072Test extends DatabindTestUtil
                         .addValue("id", "idValue")
                         .addValue("optionalField", "optionalFieldValue"));
 
-        Dto dto = reader.readValue("{}");
+        DtoWithOptional dto = reader.readValue("{}");
 
         assertEquals("idValue", dto.id);
         assertEquals("optionalFieldValue", dto.optionalField);
@@ -52,7 +57,7 @@ class JacksonInject3072Test extends DatabindTestUtil
                 .with(new InjectableValues.Std()
                         .addValue("id", "idValue"));
 
-        Dto dto = reader.readValue("{}");
+        DtoWithOptional dto = reader.readValue("{}");
 
         assertEquals("idValue", dto.id);
         assertNull(dto.optionalField);
@@ -66,6 +71,19 @@ class JacksonInject3072Test extends DatabindTestUtil
                 InvalidDefinitionException.class, () -> reader.readValue("{}"));
 
         assertEquals("No 'injectableValues' configured, cannot inject value with id [id]\n" +
+                " at [Source: (String)\"{}\"; line: 1, column: 2]", exception.getMessage());
+    }
+
+    @Test
+    void testRequiredAnnotatedFieldNotFound() {
+        // Should also fail even if DeserFeature disabled, if annotated
+        ObjectReader reader = READER.forType(DtoWithRequired.class)
+            .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
+
+        InvalidDefinitionException exception = assertThrows(
+                InvalidDefinitionException.class, () -> reader.readValue("{}"));
+
+        assertEquals("No 'injectableValues' configured, cannot inject value with id [requiredField]\n" +
                 " at [Source: (String)\"{}\"; line: 1, column: 2]", exception.getMessage());
     }
 
@@ -88,7 +106,7 @@ class JacksonInject3072Test extends DatabindTestUtil
                         .addValue("id", "idValue"))
                 .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
 
-        Dto dto = reader.readValue("{}");
+        DtoWithOptional dto = reader.readValue("{}");
 
         assertEquals("idValue", dto.id);
         assertNull(dto.optionalField);
@@ -100,7 +118,7 @@ class JacksonInject3072Test extends DatabindTestUtil
                 .with(new InjectableValues.Std())
                 .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
 
-        Dto dto = reader.readValue("{}");
+        DtoWithOptional dto = reader.readValue("{}");
 
         assertNull(dto.id);
         assertNull(dto.optionalField);
@@ -111,7 +129,7 @@ class JacksonInject3072Test extends DatabindTestUtil
         ObjectReader reader = READER
                 .without(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
 
-        Dto dto = reader.readValue("{}");
+        DtoWithOptional dto = reader.readValue("{}");
 
         assertNull(dto.id);
         assertNull(dto.optionalField);

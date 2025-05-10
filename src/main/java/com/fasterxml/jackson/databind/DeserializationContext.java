@@ -470,8 +470,8 @@ public abstract class DeserializationContext
         if (_injectableValues == null) {
             // `optional` comes from property annotation (if any); has precedence
             // over global setting
-            if ((optional != null && optional)
-                    || !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)) {
+            if (Boolean.TRUE.equals(optional)
+                    || (optional == null && !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE))) {
                 return JacksonInject.Value.empty();
             }
             return reportBadDefinition(ClassUtil.classOf(valueId), String.format(
