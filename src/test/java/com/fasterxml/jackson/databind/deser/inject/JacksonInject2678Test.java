@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.databind.tofix;
+package com.fasterxml.jackson.databind.deser.inject;
 
 import java.util.Objects;
 
@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.testutil.DatabindTestUtil;
-import com.fasterxml.jackson.databind.testutil.failure.JacksonTestFailureExpected;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -41,7 +40,6 @@ class JacksonInject2678Test extends DatabindTestUtil {
     }
 
     // [databind#2678]
-    @JacksonTestFailureExpected
     @Test
     void readValueInjectables() throws Exception {
         final InjectableValues injectableValues =
@@ -57,8 +55,6 @@ class JacksonInject2678Test extends DatabindTestUtil {
         final Some actualValuePresent = mapper.readValue(
                 "{\"field1\": \"field1value\", \"field2\": \"field2value\"}", Some.class);
         assertEquals("field1value", actualValuePresent.getField1());
-
-        // if I comment @JacksonInject that is next to the property the valid assert is the correct one:
         assertEquals("field2value", actualValuePresent.getField2());
     }
 }
