@@ -17,10 +17,10 @@ import com.fasterxml.jackson.databind.testutil.DatabindTestUtil;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class JacksonInject1381Test extends DatabindTestUtil {
-
-    private static class InputDefault {
-
+class JacksonInject1381Test extends DatabindTestUtil
+{
+    static class InputDefault
+    {
         @JacksonInject(value = "key")
         private final String field;
 
@@ -34,8 +34,8 @@ class JacksonInject1381Test extends DatabindTestUtil {
         }
     }
 
-    private static class InputTrue {
-
+    static class InputTrue
+    {
         @JacksonInject(value = "key", useInput = OptBoolean.TRUE)
         private final String field;
 
@@ -49,8 +49,8 @@ class JacksonInject1381Test extends DatabindTestUtil {
         }
     }
 
-    private static class InputFalse {
-
+    static class InputFalse
+    {
         @JacksonInject(value = "key", useInput = OptBoolean.FALSE)
         private final String field;
 
@@ -67,8 +67,8 @@ class JacksonInject1381Test extends DatabindTestUtil {
     private final String empty = "{}";
     private final String input = "{\"field\": \"input\"}";
 
-    private final ObjectMapper plainMapper = JsonMapper.builder().build();
-    private final ObjectMapper injectedMapper = JsonMapper.builder()
+    private final ObjectMapper plainMapper = newJsonMapper();
+    private final ObjectMapper injectedMapper = jsonMapperBuilder()
             .injectableValues(new InjectableValues.Std().addValue("key", "injected"))
             .build();
 
