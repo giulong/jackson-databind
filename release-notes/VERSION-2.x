@@ -6,6 +6,12 @@ Project: jackson-databind
 
 2.20.0 (not yet released)
 
+#1381: Add a way to specify "inject-only" with `@JacksonInject`
+ (contributed by Giulio L)
+#2678: `@JacksonInject` added to property overrides value from the JSON even if
+  `useInput` is `OptBoolean.TRUE`
+ (reported by Plamen T)
+ (fix contributed by Giulio L)
 #3072: Allow specifying `@JacksonInject` does not fail when there's no
   corresponding value
  (requested by Lavender S)

@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.OptBoolean;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MissingInjectableValueExcepion;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.testutil.DatabindTestUtil;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,46 +20,46 @@ class JacksonInject1381Test extends DatabindTestUtil
 {
     static class InputDefault
     {
-        @JacksonInject(value = "key")
-        private final String field;
+        private final String _field;
 
         @JsonCreator
-        public InputDefault(@JsonProperty("field") final String field) {
-            this.field = field;
+        public InputDefault(@JacksonInject(value = "key")
+                            @JsonProperty("field") final String field) {
+            _field = field;
         }
 
         public String getField() {
-            return field;
+            return _field;
         }
     }
 
     static class InputTrue
     {
-        @JacksonInject(value = "key", useInput = OptBoolean.TRUE)
-        private final String field;
+        private final String _field;
 
         @JsonCreator
-        public InputTrue(@JsonProperty("field") final String field) {
-            this.field = field;
+        public InputTrue(@JacksonInject(value = "key", useInput = OptBoolean.TRUE)
+                         @JsonProperty("field") final String field) {
+            _field = field;
         }
 
         public String getField() {
-            return field;
+            return _field;
         }
     }
 
     static class InputFalse
     {
-        @JacksonInject(value = "key", useInput = OptBoolean.FALSE)
-        private final String field;
+        private final String _field;
 
         @JsonCreator
-        public InputFalse(@JsonProperty("field") final String field) {
-            this.field = field;
+        public InputFalse(@JacksonInject(value = "key", useInput = OptBoolean.FALSE)
+                          @JsonProperty("field") final String field) {
+            _field = field;
         }
 
         public String getField() {
-            return field;
+            return _field;
         }
     }
 

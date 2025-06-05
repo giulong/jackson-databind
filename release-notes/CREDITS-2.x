@@ -1945,6 +1945,17 @@ Ryan Schmitt (@rschmitt)
   (2.19.0)
 
 Giulio Longfils (@giulong)
+ * Contributed #1381: Add a way to specify "inject-only" with `@JacksonInject`
+  (2.20.0)
+ * Contributed fix for #2678: `@JacksonInject` added to property overrides value
+   from the JSON even if `useInput` is `OptBoolean.TRUE`
+  (2.20.0)
  * Contributed #3072: Allow specifying `@JacksonInject` does not fail when there's no
    corresponding value
   (2.20.0)
+
+Plamen Tanov (@ptanov)
+ * Reported #2678: `@JacksonInject` added to property overrides value from the JSON even if
+  `useInput` is `OptBoolean.TRUE`
+  (2.20.0)
+
