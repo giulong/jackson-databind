@@ -828,6 +828,7 @@ ClassUtil.name(name), ((AnnotatedParameter) m).getIndex());
                     useInput = injectableValue.getUseInput();
                 }
 
+                // 04-Jun-2025, tatu: [databind#1381]: default for "useInput" is false
                 if (!Boolean.TRUE.equals(useInput)) {
                     builder.addInjectable(PropertyName.construct(m.getName()),
                             m.getType(),
