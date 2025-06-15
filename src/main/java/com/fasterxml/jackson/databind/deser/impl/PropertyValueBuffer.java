@@ -3,6 +3,7 @@ package com.fasterxml.jackson.databind.deser.impl;
 import java.io.IOException;
 import java.util.BitSet;
 
+import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.SettableAnyProperty;
@@ -218,6 +219,25 @@ public class PropertyValueBuffer
         if (_anyParamSetter != null) {
             _creatorParameters[_anyParamSetter.getParameterIndex()] = _createAndSetAnySetterValue();
         }
+
+        for (int ix = 0; ix < props.length; ++ix) {
+            final SettableBeanProperty prop = props[ix];
+            final AnnotatedMember member = prop.getMember();
+
+            if (member != null) {
+                final JacksonInject.Value injectableValue = prop.getInjectableValue();
+
+                if (injectableValue != null && !Boolean.TRUE.equals(injectableValue.getUseInput())) {
+                    final Object injectedValue = _context.findInjectableValue(
+                            injectableValue.getId(), prop, member, injectableValue.getOptional());
+
+                    if (injectedValue != JacksonInject.Value.empty()) {
+                        _creatorParameters[ix] = injectedValue;
+                    }
+                }
+            }
+        }
+
         if (_context.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)) {
             for (int ix = 0; ix < props.length; ++ix) {
                 if (_creatorParameters[ix] == null) {
