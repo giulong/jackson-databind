@@ -1,26 +1,25 @@
 package com.fasterxml.jackson.databind.deser.inject;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.OptBoolean;
-
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.InjectableValues;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.MissingInjectableValueExcepion;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import com.fasterxml.jackson.databind.testutil.DatabindTestUtil;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class JacksonInject1381Test extends DatabindTestUtil
+class JacksonInject1381WithOptionalDeserializationFeatureDisabledTest extends DatabindTestUtil
 {
     static class InputDefault
     {
-        @JacksonInject(value = "key")
+        @JacksonInject(value = "key", optional = OptBoolean.TRUE)
         @JsonProperty("field")
         private final String _field;
 
@@ -39,8 +38,8 @@ class JacksonInject1381Test extends DatabindTestUtil
         private final String _field;
 
         @JsonCreator
-        public InputDefaultConstructor(@JacksonInject(value = "key")
-                                       @JsonProperty("field") final String field) {
+        public InputDefaultConstructor(@JacksonInject(value = "key", optional = OptBoolean.TRUE)
+                            @JsonProperty("field") final String field) {
             _field = field;
         }
 
@@ -51,7 +50,7 @@ class JacksonInject1381Test extends DatabindTestUtil
 
     static class InputTrue
     {
-        @JacksonInject(value = "key", useInput = OptBoolean.TRUE)
+        @JacksonInject(value = "key", useInput = OptBoolean.TRUE, optional = OptBoolean.TRUE)
         @JsonProperty("field")
         private final String _field;
 
@@ -70,8 +69,8 @@ class JacksonInject1381Test extends DatabindTestUtil
         private final String _field;
 
         @JsonCreator
-        public InputTrueConstructor(@JacksonInject(value = "key", useInput = OptBoolean.TRUE)
-                                    @JsonProperty("field") final String field) {
+        public InputTrueConstructor(@JacksonInject(value = "key", useInput = OptBoolean.TRUE, optional = OptBoolean.TRUE)
+                         @JsonProperty("field") final String field) {
             _field = field;
         }
 
@@ -83,7 +82,7 @@ class JacksonInject1381Test extends DatabindTestUtil
 
     static class InputFalse
     {
-        @JacksonInject(value = "key", useInput = OptBoolean.FALSE)
+        @JacksonInject(value = "key", useInput = OptBoolean.FALSE, optional = OptBoolean.TRUE)
         @JsonProperty("field")
         private final String _field;
 
@@ -102,8 +101,8 @@ class JacksonInject1381Test extends DatabindTestUtil
         private final String _field;
 
         @JsonCreator
-        public InputFalseConstructor(@JacksonInject(value = "key", useInput = OptBoolean.FALSE)
-                                     @JsonProperty("field") final String field) {
+        public InputFalseConstructor(@JacksonInject(value = "key", useInput = OptBoolean.FALSE, optional = OptBoolean.TRUE)
+                          @JsonProperty("field") final String field) {
             _field = field;
         }
 
@@ -115,32 +114,34 @@ class JacksonInject1381Test extends DatabindTestUtil
     private final String empty = "{}";
     private final String input = "{\"field\": \"input\"}";
 
-    private final ObjectMapper plainMapper = newJsonMapper();
+    private final ObjectMapper plainMapper = newJsonMapper()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
     private final ObjectMapper injectedMapper = jsonMapperBuilder()
             .injectableValues(new InjectableValues.Std().addValue("key", "injected"))
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)
             .build();
 
     @Test
-    @DisplayName("input NO, injectable NO, useInput DEFAULT|TRUE|FALSE => exception")
+    @DisplayName("FAIL_ON_UNKNOWN_INJECT_VALUE NO, optional YES, input NO, injectable NO, useInput DEFAULT|TRUE|FALSE => exception")
     void test1() {
-        assertThrows(MissingInjectableValueExcepion.class,
+        assertThrows(ValueInstantiationException.class,
                 () -> plainMapper.readValue(empty, InputDefault.class));
-        assertThrows(MissingInjectableValueExcepion.class,
+        assertThrows(ValueInstantiationException.class,
                 () -> plainMapper.readValue(empty, InputDefaultConstructor.class));
 
-        assertThrows(MissingInjectableValueExcepion.class,
+        assertThrows(ValueInstantiationException.class,
                 () -> plainMapper.readValue(empty, InputTrue.class));
-        assertThrows(MissingInjectableValueExcepion.class,
+        assertThrows(ValueInstantiationException.class,
                 () -> plainMapper.readValue(empty, InputTrueConstructor.class));
 
-        assertThrows(MissingInjectableValueExcepion.class,
+        assertThrows(ValueInstantiationException.class,
                 () -> plainMapper.readValue(empty, InputFalse.class));
-        assertThrows(MissingInjectableValueExcepion.class,
+        assertThrows(ValueInstantiationException.class,
                 () -> plainMapper.readValue(empty, InputFalseConstructor.class));
     }
 
     @Test
-    @DisplayName("input NO, injectable YES, useInput DEFAULT|TRUE|FALSE => injected")
+    @DisplayName("FAIL_ON_UNKNOWN_INJECT_VALUE NO, optional YES, input NO, injectable YES, useInput DEFAULT|TRUE|FALSE => injected")
     void test2() throws Exception {
         assertEquals("injected", injectedMapper.readValue(empty, InputDefault.class).getField());
         assertEquals("injected", injectedMapper.readValue(empty, InputDefaultConstructor.class).getField());
@@ -151,29 +152,19 @@ class JacksonInject1381Test extends DatabindTestUtil
     }
 
     @Test
-    @DisplayName("input YES, injectable NO, useInput DEFAULT|FALSE => exception")
-    void test3() {
-        assertThrows(MissingInjectableValueExcepion.class,
-                () -> plainMapper.readValue(input, InputDefault.class));
-        assertThrows(MissingInjectableValueExcepion.class,
-                () -> plainMapper.readValue(input, InputDefaultConstructor.class));
-
-        assertThrows(MissingInjectableValueExcepion.class,
-                () -> plainMapper.readValue(input, InputFalse.class));
-        assertThrows(MissingInjectableValueExcepion.class,
-                () -> plainMapper.readValue(input, InputFalseConstructor.class));
-    }
-
-    @Test
-    @DisplayName("input YES, injectable NO, useInput TRUE => input")
-    void test4() throws Exception {
+    @DisplayName("FAIL_ON_UNKNOWN_INJECT_VALUE NO, optional YES, input YES, injectable NO, useInput DEFAULT|TRUE|FALSE => input")
+    void test3() throws Exception {
+        assertEquals("input", plainMapper.readValue(input, InputDefault.class).getField());
+        assertEquals("input", plainMapper.readValue(input, InputDefaultConstructor.class).getField());
+        assertEquals("input", plainMapper.readValue(input, InputFalse.class).getField());
+        assertEquals("input", plainMapper.readValue(input, InputFalseConstructor.class).getField());
         assertEquals("input", plainMapper.readValue(input, InputTrue.class).getField());
         assertEquals("input", plainMapper.readValue(input, InputTrueConstructor.class).getField());
     }
 
     @Test
-    @DisplayName("input YES, injectable YES, useInput DEFAULT|FALSE => injected")
-    void test5() throws Exception {
+    @DisplayName("FAIL_ON_UNKNOWN_INJECT_VALUE NO, optional YES, input YES, injectable YES, useInput DEFAULT|FALSE => injected")
+    void test4() throws Exception {
         assertEquals("injected", injectedMapper.readValue(input, InputDefault.class).getField());
         assertEquals("injected", injectedMapper.readValue(input, InputDefaultConstructor.class).getField());
         assertEquals("injected", injectedMapper.readValue(input, InputFalse.class).getField());
@@ -181,8 +172,8 @@ class JacksonInject1381Test extends DatabindTestUtil
     }
 
     @Test
-    @DisplayName("input YES, injectable YES, useInput TRUE => input")
-    void test6() throws Exception {
+    @DisplayName("FAIL_ON_UNKNOWN_INJECT_VALUE NO, optional YES, input YES, injectable YES, useInput TRUE => input")
+    void test5() throws Exception {
         assertEquals("input", injectedMapper.readValue(input, InputTrue.class).getField());
         assertEquals("input", injectedMapper.readValue(input, InputTrueConstructor.class).getField());
     }
