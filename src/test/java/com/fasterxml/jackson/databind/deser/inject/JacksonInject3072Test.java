@@ -22,14 +22,6 @@ class JacksonInject3072Test extends DatabindTestUtil
 
         @JacksonInject(value = "optionalField", optional = OptBoolean.TRUE)
         String optionalField;
-
-        public String getId() {
-            return id;
-        }
-
-        public String getOptionalField() {
-            return optionalField;
-        }
     }
 
     static class DtoWithRequired {
