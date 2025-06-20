@@ -674,7 +674,8 @@ public class StdValueInstantiator
                     args[i] = delegate;
                 } else { // nope, injectable:
                     // 09-May-2025, tatu: Not sure where to get "optional" (last arg) value...
-                    args[i] = ctxt.findInjectableValue(prop.getInjectableValueId(), prop, null, null);
+                    args[i] = ctxt.findInjectableValue(prop.getInjectableValueId(), prop, null, null,
+                            null);
                 }
             }
             // and then try calling with full set of arguments

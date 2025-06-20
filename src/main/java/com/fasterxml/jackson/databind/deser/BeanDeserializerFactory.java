@@ -822,23 +822,11 @@ ClassUtil.name(name), ((AnnotatedParameter) m).getIndex());
             for (Map.Entry<Object, AnnotatedMember> entry : raw.entrySet()) {
                 AnnotatedMember m = entry.getValue();
                 final JacksonInject.Value injectableValue = introspector.findInjectableValue(m);
-                final Boolean optional;
-                final Boolean useInput;
 
-                if (injectableValue == null) {
-                    optional = null;
-                    useInput = null;
-                } else {
-                    optional = injectableValue.getOptional();
-                    useInput = injectableValue.getUseInput();
-                }
-
-                // 04-Jun-2025, tatu: [databind#1381]: default for "useInput" is false
-                if (!Boolean.TRUE.equals(useInput)) {
-                    builder.addInjectable(PropertyName.construct(m.getName()),
-                            m.getType(),
-                            beanDesc.getClassAnnotations(), m, entry.getKey(), optional);
-                }
+                builder.addInjectable(PropertyName.construct(m.getName()),
+                        m.getType(),
+                        beanDesc.getClassAnnotations(), m, entry.getKey(),
+                        injectableValue.getOptional(), injectableValue.getUseInput());
             }
         }
     }

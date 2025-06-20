@@ -28,7 +28,7 @@ public abstract class InjectableValues
      */
     public Object findInjectableValue(DeserializationContext ctxt,
             Object valueId, BeanProperty forProperty, Object beanInstance,
-            Boolean optional)
+            Boolean optional, Boolean useInput)
         throws JsonMappingException
     {
         // For backwards-compatibility, must delegate to old method
@@ -83,7 +83,7 @@ public abstract class InjectableValues
          */
         @Override
         public Object findInjectableValue(DeserializationContext ctxt, Object valueId,
-                BeanProperty forProperty, Object beanInstance, Boolean optional)
+                BeanProperty forProperty, Object beanInstance, Boolean optional, Boolean useInput)
             throws JsonMappingException
         {
             if (!(valueId instanceof String)) {
@@ -116,7 +116,7 @@ public abstract class InjectableValues
         public Object findInjectableValue(Object valueId, DeserializationContext ctxt,
                 BeanProperty forProperty, Object beanInstance) throws JsonMappingException
         {
-            return this.findInjectableValue(ctxt, valueId, forProperty, beanInstance, null);
+            return this.findInjectableValue(ctxt, valueId, forProperty, beanInstance, null, null);
         }
     }
 }

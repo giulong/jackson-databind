@@ -222,17 +222,17 @@ public class PropertyValueBuffer
 
         for (int ix = 0; ix < props.length; ++ix) {
             final SettableBeanProperty prop = props[ix];
-            final AnnotatedMember member = prop.getMember();
+            final JacksonInject.Value injectableValue = prop.getInjectableValue();
 
-            if (member != null) {
-                final JacksonInject.Value injectableValue = prop.getInjectableValue();
+            if (injectableValue != null) {
+                final Boolean useInput = injectableValue.getUseInput();
 
-                if (injectableValue != null && !Boolean.TRUE.equals(injectableValue.getUseInput())) {
-                    final Object injectedValue = _context.findInjectableValue(
-                            injectableValue.getId(), prop, member, injectableValue.getOptional());
+                if (!Boolean.TRUE.equals(useInput)) {
+                    final Object value = _context.findInjectableValue(injectableValue.getId(),
+                            prop, prop.getMember(), injectableValue.getOptional(), useInput);
 
-                    if (injectedValue != JacksonInject.Value.empty()) {
-                        _creatorParameters[ix] = injectedValue;
+                    if (value != JacksonInject.Value.empty()) {
+                        _creatorParameters[ix] = value;
                     }
                 }
             }
@@ -289,7 +289,7 @@ public class PropertyValueBuffer
         Object injectableValueId = prop.getInjectableValueId();
         if (injectableValueId != null) {
             return _context.findInjectableValue(prop.getInjectableValueId(),
-                    prop, null, null);
+                    prop, null, null, null);
         }
         // Second: required?
         if (prop.isRequired()) {

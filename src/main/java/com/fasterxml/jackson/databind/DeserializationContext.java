@@ -465,21 +465,24 @@ public abstract class DeserializationContext
      * @since 2.20
      */
     public final Object findInjectableValue(Object valueId,
-            BeanProperty forProperty, Object beanInstance, Boolean optional)
+            BeanProperty forProperty, Object beanInstance, Boolean optional, Boolean useInput)
         throws JsonMappingException
     {
         if (_injectableValues == null) {
             // `optional` comes from property annotation (if any); has precedence
             // over global setting.
-            if (Boolean.TRUE.equals(optional)
-                    || (optional == null && !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE))) {
+            if (Boolean.TRUE.equals(useInput)
+                    || Boolean.TRUE.equals(optional)
+                    || (useInput == null || optional == null)
+                    && !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)) {
                 return JacksonInject.Value.empty();
             }
             throw missingInjectableValueException(String.format(
 "No 'injectableValues' configured, cannot inject value with id '%s'", valueId),
                     valueId, forProperty, beanInstance);
         }
-        return _injectableValues.findInjectableValue(this, valueId, forProperty, beanInstance, optional);
+        return _injectableValues.findInjectableValue(this, valueId, forProperty, beanInstance,
+                optional, useInput);
     }
 
     /**
@@ -490,7 +493,7 @@ public abstract class DeserializationContext
             BeanProperty forProperty, Object beanInstance)
         throws JsonMappingException
     {
-        return findInjectableValue(valueId, forProperty, beanInstance, null);
+        return findInjectableValue(valueId, forProperty, beanInstance, null, null);
     }
 
     /**
