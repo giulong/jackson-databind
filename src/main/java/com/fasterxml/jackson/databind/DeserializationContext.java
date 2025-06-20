@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.fasterxml.jackson.annotation.JacksonInject;
@@ -69,6 +70,12 @@ public abstract class DeserializationContext
      * Object that handle details of {@link JsonDeserializer} caching.
      */
     protected final DeserializerCache _cache;
+
+    /**
+     * Object that caches the injectable values already resolved,
+     * to avoid executing the injection logic multiple times
+     */
+    protected final Map<Object, Object> _injectablesCache;
 
     /*
     /**********************************************************
@@ -169,6 +176,7 @@ public abstract class DeserializationContext
             cache = new DeserializerCache();
         }
         _cache = cache;
+        _injectablesCache = new ConcurrentHashMap<>();
         _featureFlags = 0;
         _readCapabilities = null;
         _config = null;
@@ -181,6 +189,7 @@ public abstract class DeserializationContext
             DeserializerFactory factory)
     {
         _cache = src._cache;
+        _injectablesCache = src._injectablesCache;
         _factory = factory;
 
         _config = src._config;
@@ -199,6 +208,7 @@ public abstract class DeserializationContext
              DeserializerCache cache)
     {
         _cache = cache;
+        _injectablesCache = src._injectablesCache;
         _factory = src._factory;
 
         _config = src._config;
@@ -218,6 +228,7 @@ public abstract class DeserializationContext
             InjectableValues injectableValues)
     {
         _cache = src._cache;
+        _injectablesCache = src._injectablesCache;
         _factory = src._factory;
         // 08-Jun-2020. tatu: Called only for `ObjectMapper.canDeserialize()`
         //    (see [databind#2749]), not sure what's the best work-around but
@@ -242,6 +253,7 @@ public abstract class DeserializationContext
             DeserializationConfig config)
     {
         _cache = src._cache;
+        _injectablesCache = src._injectablesCache;
         _factory = src._factory;
         _readCapabilities = null;
 
@@ -259,6 +271,7 @@ public abstract class DeserializationContext
      */
     protected DeserializationContext(DeserializationContext src) {
         _cache = src._cache.emptyCopy();
+        _injectablesCache = src._injectablesCache;
         _factory = src._factory;
 
         _config = src._config;
@@ -479,7 +492,19 @@ public abstract class DeserializationContext
 "No 'injectableValues' configured, cannot inject value with id '%s'", valueId),
                     valueId, forProperty, beanInstance);
         }
-        return _injectableValues.findInjectableValue(this, valueId, forProperty, beanInstance, optional);
+
+        Object value = _injectablesCache.get(valueId);
+
+        if (value == null) {
+            value = _injectableValues.findInjectableValue(this, valueId, forProperty, beanInstance,
+                    optional);
+
+            if (value != null) {
+                _injectablesCache.put(valueId, value);
+            }
+        }
+
+        return value;
     }
 
     /**
