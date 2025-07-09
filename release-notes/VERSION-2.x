@@ -26,6 +26,15 @@ Project: jackson-databind
  (fix by Joo-Hyuk K)
 - Generate SBOMs [JSTEP-14]
 
+2.19.2 (not yet released)
+
+#5202: `JsonSetter.contentNulls` ignored for `Object[]`, `String[]`
+  and `Collection<String>`
+ (fix by @wrongwrong)
+#5215: `@JsonAnyGetter` serialization order change from 2.18.4 to 2.19.0
+ (reported by Eddú M)
+ (fix by Joo-Hyuk K)
+
 2.19.1 (13-Jun-2025)
 
 #5139: In `CollectionDeserializer`, `JsonSetter.contentNulls` is sometimes ignored
