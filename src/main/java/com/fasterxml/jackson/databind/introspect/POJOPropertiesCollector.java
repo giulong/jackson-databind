@@ -447,6 +447,9 @@ public class POJOPropertiesCollector
             _addCreators(props);
         }
 
+        // Mark injected fields that are already injected via constructor properties
+        _ignoreDuplicateInjection(props);
+
         // Remove ignored properties, first; this MUST precede annotation merging
         // since logic relies on knowing exactly which accessor has which annotation
         _removeUnwantedProperties(props);
@@ -1289,6 +1292,40 @@ ctor.creator()));
     /* Internal methods; removing ignored properties
     /**********************************************************
      */
+
+    /**
+     * Method to mark injected fields as ignored if there's a corresponding
+     * creator property already injecting the same value
+     */
+    protected void _ignoreDuplicateInjection(final Map<String, POJOPropertyBuilder> props)
+    {
+        for (POJOPropertyBuilder prop : props.values()) {
+            final AnnotatedField field = prop.getFieldUnchecked();
+            if (field == null) {
+                continue;
+            }
+
+            final JacksonInject.Value injectableValue =
+                    _annotationIntrospector.findInjectableValue(field);
+            if (injectableValue == null) {
+                continue;
+            }
+
+            for (POJOPropertyBuilder creatorProperty : _creatorProperties) {
+                if (creatorProperty == null) {
+                    continue;
+                }
+
+                final AnnotatedParameter parameter = creatorProperty.getConstructorParameter();
+                if (parameter != null
+                        && injectableValue.equals(
+                                _annotationIntrospector.findInjectableValue(parameter))) {
+                    field.ignoreInjection();
+                    break;
+                }
+            }
+        }
+    }
 
     /**
      * Method called to get rid of candidate properties that are marked

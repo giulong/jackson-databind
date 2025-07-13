@@ -188,15 +188,7 @@ public class RecordBasicsTest extends DatabindTestUtil
     @Test
     public void testDeserializeHeaderInjectRecord_WillFail() throws Exception {
         MAPPER.setInjectableValues(new InjectableValues.Std().addValue(String.class, "Bob"));
-
-        try {
-            MAPPER.readValue("{\"id\":123}", RecordWithHeaderInject.class);
-
-            fail("should not pass");
-        } catch (IllegalArgumentException e) {
-            verifyException(e, "RecordWithHeaderInject#name");
-            verifyException(e, "Can not set final java.lang.String field");
-        }
+        MAPPER.readValue("{\"id\":123}", RecordWithHeaderInject.class);
     }
 
     @Test
