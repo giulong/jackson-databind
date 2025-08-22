@@ -1432,40 +1432,6 @@ ctor.creator()));
      */
 
     /**
-     * Method to mark injected fields as ignored if there's a corresponding
-     * creator property already injecting the same value
-     */
-    protected void _ignoreDuplicateInjection(final Map<String, POJOPropertyBuilder> props)
-    {
-        for (POJOPropertyBuilder prop : props.values()) {
-            final AnnotatedField field = prop.getFieldUnchecked();
-            if (field == null) {
-                continue;
-            }
-
-            final JacksonInject.Value injectableValue =
-                    _annotationIntrospector.findInjectableValue(field);
-            if (injectableValue == null) {
-                continue;
-            }
-
-            for (POJOPropertyBuilder creatorProperty : _creatorProperties) {
-                if (creatorProperty == null) {
-                    continue;
-                }
-
-                final AnnotatedParameter parameter = creatorProperty.getConstructorParameter();
-                if (parameter != null
-                        && injectableValue.equals(
-                                _annotationIntrospector.findInjectableValue(parameter))) {
-//                    field.ignoreInjection();
-                    break;
-                }
-            }
-        }
-    }
-
-    /**
      * Method called to get rid of candidate properties that are marked
      * as ignored.
      */
