@@ -450,8 +450,6 @@ public class POJOPropertiesCollector
         if (_config.isEnabled(MapperFeature.FIX_FIELD_NAME_UPPER_CASE_PREFIX)) {
              _fixLeadingFieldNameCase(props);
         }
-        // Mark injected fields that are already injected via constructor properties
-        _ignoreDuplicateInjection(props);
         // Remove ignored properties, first; this MUST precede annotation merging
         // since logic relies on knowing exactly which accessor has which annotation
         _removeUnwantedProperties(props);
@@ -1284,6 +1282,20 @@ ctor.creator()));
             }
             _doAddInjectable(_annotationIntrospector.findInjectableValue(m), m);
         }
+
+        // 21-Aug-2025, tatu: [databind#4218] avoid duplicate injectables
+        if (_injectables != null) {
+            for (POJOPropertyBuilder creatorProperty : _creatorProperties) {
+                if (creatorProperty == null) {
+                    continue;
+                }
+                final AnnotatedParameter parameter = creatorProperty.getConstructorParameter();
+                JacksonInject.Value injectable = _annotationIntrospector.findInjectableValue(parameter);
+                if (injectable != null) {
+                    _injectables.remove(injectable.getId());
+                }
+            }
+        }
     }
 
     protected void _doAddInjectable(JacksonInject.Value injectable, AnnotatedMember m)
@@ -1446,7 +1458,7 @@ ctor.creator()));
                 if (parameter != null
                         && injectableValue.equals(
                                 _annotationIntrospector.findInjectableValue(parameter))) {
-                    field.ignoreInjection();
+//                    field.ignoreInjection();
                     break;
                 }
             }

@@ -51,7 +51,7 @@ class JacksonInject4218Test extends DatabindTestUtil
 
     // [databind#4218]
     @Test
-    void injectFail4218() throws Exception
+    void injectNoDups4218() throws Exception
     {
         ObjectReader reader = newJsonMapper()
                 .readerFor(Dto.class)

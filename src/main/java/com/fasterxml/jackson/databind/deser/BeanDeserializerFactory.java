@@ -821,9 +821,6 @@ ClassUtil.name(name), ((AnnotatedParameter) m).getIndex());
 
             for (Map.Entry<Object, AnnotatedMember> entry : raw.entrySet()) {
                 AnnotatedMember m = entry.getValue();
-                if (m.isIgnoreInjection()) {
-                    continue;
-                }
                 final JacksonInject.Value injectableValue = introspector.findInjectableValue(m);
                 final Boolean optional = injectableValue == null ? null : injectableValue.getOptional();
 

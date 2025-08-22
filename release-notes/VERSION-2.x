@@ -8,6 +8,10 @@ Not yet released
 
 #2692: Should never call `set()` on setterless property during deserialization
  (reported by @lbonco)
+#4218: If `@JacksonInject` is specified for field and deserialized by the Creator,
+  the inject process will be executed twice
+ (reported by  @wrongwrong)
+ (fix by Giulio L)
 #5237: Failing `@JsonMerge` with a custom Map with a `@JsonCreator` constructor
  (reported by @nlisker)
 #5238: Immutable classes with `@JsonIdentityInfo` can be deserialized; records cannot

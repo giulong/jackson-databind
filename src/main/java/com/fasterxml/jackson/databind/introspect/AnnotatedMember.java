@@ -32,13 +32,6 @@ public abstract class AnnotatedMember
     // no need to persist
     protected final transient AnnotationMap _annotations;
 
-    /**
-     * Flag to avoid duplicate injection. See issue #4218
-     *
-     * @since 2.20
-     */
-    protected boolean _ignoreInjection;
-
     protected AnnotatedMember(TypeResolutionContext ctxt, AnnotationMap annotations) {
         super();
         _typeContext = ctxt;
@@ -145,20 +138,6 @@ public abstract class AnnotatedMember
         if (m != null) { // may be null for virtual members
             ClassUtil.checkAndFixAccess(m, force);
         }
-    }
-
-    /**
-     * @since 2.20
-     */
-    public void ignoreInjection() {
-        _ignoreInjection = true;
-    }
-
-    /**
-     * @since 2.20
-     */
-    public boolean isIgnoreInjection() {
-        return _ignoreInjection;
     }
 
     /**
