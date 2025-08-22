@@ -1297,12 +1297,16 @@ public class ObjectMapper
 
     /**
      * Factory method for constructing properly initialized {@link JsonParser}
-     * to read content from specified {@link File}.
+     * to read content from specified {@link URL}.
      * Parser is not managed (or "owned") by ObjectMapper: caller is responsible
      * for properly closing it once content reading is complete.
      *
      * @since 2.11
+     *
+     * @deprecated since 2.20 deprecated as it calls {@link JsonFactory#createParser(URL)}.
+     *            Instead, use equivalent methods that take InputStream inputs instead.
      */
+    @Deprecated // @since 2.20
     public JsonParser createParser(URL src) throws IOException {
         _assertNotNull("src", src);
         return _deserializationConfig.initialize(_jsonFactory.createParser(src));
@@ -1849,7 +1853,14 @@ public class ObjectMapper
      *<p>
      * NOTE: behavior differs slightly from 2.8, where second argument was
      * implied to be <code>JsonInclude.Include.ALWAYS</code>.
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
+     *
+     * @deprecated Since 2.9 use {@link #setDefaultPropertyInclusion(JsonInclude.Include)}
      */
+    @Deprecated
     public ObjectMapper setSerializationInclusion(JsonInclude.Include incl) {
         setPropertyInclusion(JsonInclude.Value.construct(incl, incl));
         return this;
@@ -1857,7 +1868,7 @@ public class ObjectMapper
 
     /**
      * @since 2.7
-     * @deprecated Since 2.9 use {@link #setDefaultPropertyInclusion}
+     * @deprecated Since 2.9 use {@link #setDefaultPropertyInclusion(JsonInclude.Value)}
      */
     @Deprecated
     public ObjectMapper setPropertyInclusion(JsonInclude.Value incl) {
@@ -1868,6 +1879,10 @@ public class ObjectMapper
      * Method for setting default POJO property inclusion strategy for serialization,
      * applied for all properties for which there are no per-type or per-property
      * overrides (via annotations or config overrides).
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9 (basically rename of <code>setPropertyInclusion</code>)
      */
@@ -1881,6 +1896,10 @@ public class ObjectMapper
      *<pre>
      *  setDefaultPropertyInclusion(JsonInclude.Value.construct(incl, incl));
      *</pre>
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9 (basically rename of <code>setPropertyInclusion</code>)
      */
@@ -1893,6 +1912,10 @@ public class ObjectMapper
      * Method for setting default Setter configuration, regarding things like
      * merging, null-handling; used for properties for which there are
      * no per-type or per-property overrides (via annotations or config overrides).
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9
      */
@@ -1906,6 +1929,10 @@ public class ObjectMapper
      * defaults, which are in effect unless overridden by
      * annotations (like <code>JsonAutoDetect</code>) or per-type
      * visibility overrides.
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9
      */
@@ -1918,6 +1945,10 @@ public class ObjectMapper
      * Method for setting default Setter configuration, regarding things like
      * merging, null-handling; used for properties for which there are
      * no per-type or per-property overrides (via annotations or config overrides).
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9
      */
@@ -1927,6 +1958,11 @@ public class ObjectMapper
     }
 
     /**
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
+     *
      * @since 2.10
      */
     public ObjectMapper setDefaultLeniency(Boolean b) {
@@ -3346,11 +3382,15 @@ public class ObjectMapper
      * passed-in {@link URL}.
      *<p>
      * NOTE: handling of {@link java.net.URL} is delegated to
-     * {@link JsonFactory#createParser(java.net.URL)} and usually simply
+     * {@link JsonFactory#createParser(URL)} and usually simply
      * calls {@link java.net.URL#openStream()}, meaning no special handling
      * is done. If different HTTP connection options are needed you will need
      * to create {@link java.io.InputStream} separately.
+     *
+     * @deprecated since 2.20 deprecated as it calls {@link JsonFactory#createParser(URL)}.
+     *            Instead, use equivalent methods that take InputStream inputs instead.
      */
+    @Deprecated // @since 2.20
     public JsonNode readTree(URL source) throws IOException
     {
         _assertNotNull("source", source);
@@ -3817,29 +3857,43 @@ public class ObjectMapper
      *    of type {@link JsonParser} supports (JSON for default case)
      * @throws DatabindException if the input JSON structure does not match structure
      *   expected for result type (or has other mismatch issues)
+     *
+     * @deprecated since 2.20 deprecated as it calls {@link JsonFactory#createParser(URL)}.
+     *            Instead, use equivalent methods that take InputStream inputs instead.
      */
+    @Deprecated // @since 2.20
     @SuppressWarnings("unchecked")
     public <T> T readValue(URL src, Class<T> valueType)
         throws IOException, StreamReadException, DatabindException
     {
         _assertNotNull("src", src);
-        return (T) _readMapAndClose(_jsonFactory.createParser(src), _typeFactory.constructType(valueType));
+        return (T) _readMapAndClose(_jsonFactory.createParser(src),
+                _typeFactory.constructType(valueType));
     }
 
     /**
      * Same as {@link #readValue(java.net.URL, Class)} except that target specified by {@link TypeReference}.
+     *
+     * @deprecated since 2.20 deprecated as it calls {@link JsonFactory#createParser(URL)}.
+     *            Instead, use equivalent methods that take InputStream inputs instead.
      */
+    @Deprecated // @since 2.20
     @SuppressWarnings({ "unchecked" })
     public <T> T readValue(URL src, TypeReference<T> valueTypeRef)
         throws IOException, StreamReadException, DatabindException
     {
         _assertNotNull("src", src);
-        return (T) _readMapAndClose(_jsonFactory.createParser(src), _typeFactory.constructType(valueTypeRef));
+        return (T) _readMapAndClose(_jsonFactory.createParser(src),
+                _typeFactory.constructType(valueTypeRef));
     }
 
     /**
      * Same as {@link #readValue(java.net.URL, Class)} except that target specified by {@link JavaType}.
+     *
+     * @deprecated since 2.20 deprecated as it calls {@link JsonFactory#createParser(URL)}.
+     *            Instead, use equivalent methods that take InputStream inputs instead.
      */
+    @Deprecated // @since 2.20
     @SuppressWarnings("unchecked")
     public <T> T readValue(URL src, JavaType valueType)
         throws IOException, StreamReadException, DatabindException
