@@ -1853,7 +1853,14 @@ public class ObjectMapper
      *<p>
      * NOTE: behavior differs slightly from 2.8, where second argument was
      * implied to be <code>JsonInclude.Include.ALWAYS</code>.
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
+     *
+     * @deprecated Since 2.9 use {@link #setDefaultPropertyInclusion(JsonInclude.Include)}
      */
+    @Deprecated
     public ObjectMapper setSerializationInclusion(JsonInclude.Include incl) {
         setPropertyInclusion(JsonInclude.Value.construct(incl, incl));
         return this;
@@ -1861,7 +1868,7 @@ public class ObjectMapper
 
     /**
      * @since 2.7
-     * @deprecated Since 2.9 use {@link #setDefaultPropertyInclusion}
+     * @deprecated Since 2.9 use {@link #setDefaultPropertyInclusion(JsonInclude.Value)}
      */
     @Deprecated
     public ObjectMapper setPropertyInclusion(JsonInclude.Value incl) {
@@ -1872,6 +1879,10 @@ public class ObjectMapper
      * Method for setting default POJO property inclusion strategy for serialization,
      * applied for all properties for which there are no per-type or per-property
      * overrides (via annotations or config overrides).
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9 (basically rename of <code>setPropertyInclusion</code>)
      */
@@ -1885,6 +1896,10 @@ public class ObjectMapper
      *<pre>
      *  setDefaultPropertyInclusion(JsonInclude.Value.construct(incl, incl));
      *</pre>
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9 (basically rename of <code>setPropertyInclusion</code>)
      */
@@ -1897,6 +1912,10 @@ public class ObjectMapper
      * Method for setting default Setter configuration, regarding things like
      * merging, null-handling; used for properties for which there are
      * no per-type or per-property overrides (via annotations or config overrides).
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9
      */
@@ -1910,6 +1929,10 @@ public class ObjectMapper
      * defaults, which are in effect unless overridden by
      * annotations (like <code>JsonAutoDetect</code>) or per-type
      * visibility overrides.
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9
      */
@@ -1922,6 +1945,10 @@ public class ObjectMapper
      * Method for setting default Setter configuration, regarding things like
      * merging, null-handling; used for properties for which there are
      * no per-type or per-property overrides (via annotations or config overrides).
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
      *
      * @since 2.9
      */
@@ -1931,6 +1958,11 @@ public class ObjectMapper
     }
 
     /**
+     *<p>
+     * NOTE: in Jackson 3.x all configuration goes through {@code ObjectMapper} builders,
+     * see {@link com.fasterxml.jackson.databind.cfg.MapperBuilder},
+     * and this method will be removed from 3.0.
+     *
      * @since 2.10
      */
     public ObjectMapper setDefaultLeniency(Boolean b) {
