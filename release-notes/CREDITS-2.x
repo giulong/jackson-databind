@@ -1866,9 +1866,12 @@ wrongwrong (@k163377)
  * Contributed fix for #5139: In `CollectionDeserializer`, `JsonSetter.contentNulls`
    is sometimes ignored
   (2.19.1)
- * Contributed fix for #5202: #5202: `JsonSetter.contentNulls` ignored for `Object[]`,
+ * Contributed fix for #5202: `JsonSetter.contentNulls` ignored for `Object[]`,
   `String[]` and `Collection<String>`
   (2.19.2)
+ * Reported #4218: If `@JacksonInject` is specified for field and deserialized by
+   the Creator, the inject process will be executed twice
+  (2.20.0)
 
 Bernd Ahlers (@bernd)
  * Reported #4742: Deserialization with Builder, External type id, `@JsonCreator` failing
