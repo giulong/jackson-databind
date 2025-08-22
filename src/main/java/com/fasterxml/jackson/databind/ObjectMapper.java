@@ -1123,8 +1123,13 @@ public class ObjectMapper
      * NOTE: when using the default {@link com.fasterxml.jackson.databind.module.SimpleModule}
      * constructor, its id is specified as {@code null} and as a consequence such
      * module is NOT included in returned set.
+     *<p>
+     * NOTE: this method will be replaced in Jackson 3.0 with
+     * {@code Stream<JacksonModule> getRegisteredModules()} that will return actual Module
+     * instances, instead of ids. Such method can not be backported in 2.x due to
+     * differences in how Module registration works (2.x only has access to Module Ids)
      *
-     * @since 2.9.6
+     * @since 2.10
      */
     public Set<Object> getRegisteredModuleIds()
     {
