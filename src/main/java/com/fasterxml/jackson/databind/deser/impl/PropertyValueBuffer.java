@@ -222,14 +222,14 @@ public class PropertyValueBuffer
 
         for (int ix = 0; ix < props.length; ++ix) {
             final SettableBeanProperty prop = props[ix];
-            final JacksonInject.Value injectableValue = prop.getInjectableValue();
+            final JacksonInject.Value injection = prop.getInjectionDefinition();
 
-            if (injectableValue != null) {
-                final Boolean useInput = injectableValue.getUseInput();
+            if (injection != null) {
+                final Boolean useInput = injection.getUseInput();
 
                 if (!Boolean.TRUE.equals(useInput)) {
-                    final Object value = _context.findInjectableValue(injectableValue.getId(),
-                            prop, prop.getMember(), injectableValue.getOptional(), useInput);
+                    final Object value = _context.findInjectableValue(injection.getId(),
+                            prop, prop.getMember(), injection.getOptional(), useInput);
 
                     if (value != JacksonInject.Value.empty()) {
                         _creatorParameters[ix] = value;
