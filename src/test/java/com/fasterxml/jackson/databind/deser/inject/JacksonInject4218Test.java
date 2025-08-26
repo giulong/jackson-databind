@@ -39,14 +39,12 @@ class JacksonInject4218Test extends DatabindTestUtil
                 Object valueId,
                 BeanProperty forProperty,
                 Object beanInstance,
-                Boolean optional,
-                Boolean useInput
+                Boolean optional, Boolean useInput
         ) throws JsonMappingException {
             if (valueId.equals("id")) {
                 return "id" + nextId++;
             } else {
-                return super.findInjectableValue(ctxt, valueId, forProperty, beanInstance,
-                        optional, useInput);
+                return super.findInjectableValue(ctxt, valueId, forProperty, beanInstance, optional, useInput);
             }
         }
     }
