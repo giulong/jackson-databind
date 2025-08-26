@@ -107,8 +107,9 @@ class JacksonInject1381DeserializationFeatureDisabledTest extends DatabindTestUt
     private final String empty = "{}";
     private final String input = "{\"field\": \"input\"}";
 
-    private final ObjectMapper plainMapper = newJsonMapper()
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE);
+    private final ObjectMapper plainMapper = jsonMapperBuilder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)
+            .build();
     private final ObjectMapper injectedMapper = jsonMapperBuilder()
             .injectableValues(new InjectableValues.Std().addValue("key", "injected"))
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)
