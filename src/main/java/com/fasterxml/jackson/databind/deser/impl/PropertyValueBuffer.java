@@ -192,7 +192,7 @@ public class PropertyValueBuffer
      * and verification of values for required properties,
      * after either {@link #assignParameter(SettableBeanProperty, Object)}
      * returns <code>true</code> (to indicate all creator properties are found), or when
-     * then whole JSON Object has been processed,
+     * the whole JSON Object has been processed,
      */
     public Object[] getParameters(SettableBeanProperty[] props)
         throws JsonMappingException, IOException
