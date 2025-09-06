@@ -72,8 +72,9 @@ public class ValueInjector
 
         if (value == JacksonInject.Value.empty()) {
             if (Boolean.FALSE.equals(_optional)) {
-                throw context.missingInjectableValueException(String.format(
-                        "No 'injectableValues' configured, cannot inject value with id '%s'", _valueId),
+                throw context.missingInjectableValueException(
+                        String.format("No injectable value with id '%s' found (for property '%s')",
+                                _valueId, beanInstance),
                         _valueId, null, beanInstance);
             }
         } else if (!Boolean.TRUE.equals(_useInput)) {
