@@ -6,7 +6,8 @@ Project: jackson-databind
 
 2.21.0 (not yet released)
 
-No change since 2.20
+#5293: Fix minor typo in `PropertyBindingException.getMessageSuffix()`
+ (reported by Johny L)
 
 2.20.0 (28-Aug-2025)
 
@@ -55,6 +56,8 @@ No change since 2.20
 #5271: `EnumDeserializer` fails to deserialize Enums with @JsonValue - uses table
   with name() key instead of @JsonValue key
  (reported by Michael R)
+#5297: Deprecate `MapperBuilder.serializationInclusion()` (to align
+  with `ObjectMapper`, prepare for 3.0)
 - Generate SBOMs [JSTEP-14]
 
 2.19.2 (18-Jul-2025)
