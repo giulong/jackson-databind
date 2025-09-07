@@ -90,6 +90,22 @@ public class PropertyValueBuffer
      */
     protected PropertyValue _anyParamBuffered;
 
+    /**
+     * Bitflag used to track already injected parameters when number of parameters is
+     * less than 32 (fits in int).
+     *
+     * @since 2.21
+     */
+    protected int _paramsInjected;
+
+    /**
+     * Bitflag used to track already injected parameters when number of parameters is
+     * 32 or higher.
+     *
+     * @since 2.21
+     */
+    protected final BitSet _paramsInjectedBig;
+
     /*
     /**********************************************************
     /* Life-cycle
@@ -109,8 +125,10 @@ public class PropertyValueBuffer
         _creatorParameters = new Object[paramCount];
         if (paramCount < 32) {
             _paramsSeenBig = null;
+            _paramsInjectedBig = null;
         } else {
             _paramsSeenBig = new BitSet();
+            _paramsInjectedBig = new BitSet();
         }
         // Only care about Creator-bound Any setters:
         if ((anyParamSetter == null) || (anyParamSetter.getParameterIndex() < 0)) {
@@ -220,24 +238,6 @@ public class PropertyValueBuffer
             _creatorParameters[_anyParamSetter.getParameterIndex()] = _createAndSetAnySetterValue();
         }
 
-        for (int ix = 0; ix < props.length; ++ix) {
-            final SettableBeanProperty prop = props[ix];
-            final JacksonInject.Value injection = prop.getInjectionDefinition();
-
-            if (injection != null) {
-                final Boolean useInput = injection.getUseInput();
-
-                if (!Boolean.TRUE.equals(useInput)) {
-                    final Object value = _context.findInjectableValue(injection.getId(),
-                            prop, prop.getMember(), injection.getOptional(), useInput);
-
-                    if (value != JacksonInject.Value.empty()) {
-                        _creatorParameters[ix] = value;
-                    }
-                }
-            }
-        }
-
         if (_context.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)) {
             for (int ix = 0; ix < props.length; ++ix) {
                 if (_creatorParameters[ix] == null) {
@@ -248,6 +248,19 @@ public class PropertyValueBuffer
                 }
             }
         }
+
+        if (_paramsInjectedBig == null) {
+            for (int ix = 0; ix < _creatorParameters.length; ++ix) {
+                if ((_paramsInjected & 1) == 0) {
+                    _inject(props[ix]);
+                }
+            }
+        } else {
+            for (int ix = 0; (ix = _paramsInjectedBig.nextClearBit(ix)) < _creatorParameters.length; ++ix) {
+                _inject(props[ix]);
+            }
+        }
+
         return _creatorParameters;
     }
 
@@ -288,6 +301,7 @@ public class PropertyValueBuffer
         // First: do we have injectable value?
         Object injectableValueId = prop.getInjectableValueId();
         if (injectableValueId != null) {
+            _trackInjected(prop);
             return _context.findInjectableValue(prop.getInjectableValueId(),
                     prop, null, null, null);
         }
@@ -319,6 +333,32 @@ public class PropertyValueBuffer
                 e.prependPath(member.getDeclaringClass(), prop.getName());
             }
             throw e;
+        }
+    }
+
+    private void _inject(final SettableBeanProperty prop) throws JsonMappingException {
+        final JacksonInject.Value injection = prop.getInjectionDefinition();
+
+        if (injection != null) {
+            final Boolean useInput = injection.getUseInput();
+
+            if (!Boolean.TRUE.equals(useInput)) {
+                final Object value = _context.findInjectableValue(injection.getId(),
+                        prop, prop.getMember(), injection.getOptional(), useInput);
+
+                if (value != JacksonInject.Value.empty()) {
+                    _trackInjected(prop);
+                    _creatorParameters[prop.getCreatorIndex()] = value;
+                }
+            }
+        }
+    }
+
+    private void _trackInjected(final SettableBeanProperty prop) {
+        if (_paramsInjectedBig == null) {
+            _paramsInjected |= 1 << prop.getCreatorIndex();
+        } else {
+            _paramsInjectedBig.set(prop.getCreatorIndex());
         }
     }
 
