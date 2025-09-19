@@ -473,7 +473,7 @@ public abstract class SettableBeanProperty
      * Accessor for injection definition, if this bean property supports
      * value injection.
      *
-     * @since 2.20
+     * @since 2.21
      */
     public JacksonInject.Value getInjectionDefinition() { return null; }
 

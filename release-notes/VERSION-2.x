@@ -6,6 +6,8 @@ Project: jackson-databind
 
 2.21.0 (not yet released)
 
+#1381: Add a way to specify "inject-only" with `@JacksonInject`
+ (fix by Giulio L)
 #5045: If there is a no-parameter constructor marked as `JsonCreator` and
   a constructor reported as `DefaultCreator`, latter is incorrectly used
  (reported by  @wrongwrong)
@@ -23,8 +25,6 @@ Project: jackson-databind
 
 2.20.0 (28-Aug-2025)
 
-#1381: Add a way to specify "inject-only" with `@JacksonInject`
- (fix by Giulio L)
 #2678: `@JacksonInject` added to property overrides value from the JSON
   even if `useInput` is `OptBoolean.TRUE`
  (reported by Plamen T)
