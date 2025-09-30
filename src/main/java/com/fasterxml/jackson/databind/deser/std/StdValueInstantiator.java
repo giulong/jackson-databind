@@ -675,8 +675,8 @@ public class StdValueInstantiator
                 } else { // nope, injectable:
                     // 09-May-2025, tatu: Not sure where to get "optional" (last arg) value...
                     // 25-Aug-2025, tatu: ... or "useInput"
-                    args[i] = ctxt.findInjectableValue(prop.getInjectableValueId(), prop, null,
-                            null, null);
+                    args[i] = ctxt.findInjectableValue(prop.getInjectableValueId(), prop,
+                            null, null, null);
                 }
             }
             // and then try calling with full set of arguments
