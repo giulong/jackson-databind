@@ -76,7 +76,7 @@ class JacksonInject3072Test extends DatabindTestUtil
                 MissingInjectableValueExcepion.class, () -> reader.readValue("{}"));
 
         assertThat(exception.getMessage())
-            .startsWith("No injectable value with id 'requiredValue' found (for property ");
+            .startsWith("No injectable value with id 'requiredValue' found (for property 'requiredField')");
 
         // Also check the other code path, with non-null Injectables
         ObjectReader reader2 = reader.with(new InjectableValues.Std()
