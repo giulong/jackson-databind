@@ -251,7 +251,7 @@ public class PropertyValueBuffer
 
         if (_paramsInjectedBig == null) {
             for (int ix = 0; ix < _creatorParameters.length; ++ix) {
-                if ((_paramsInjected & 1) == 0) {
+                if ((_paramsInjected & (1 << ix)) == 0) {
                     _inject(props[ix]);
                 }
             }
