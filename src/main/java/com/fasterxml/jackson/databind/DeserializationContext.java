@@ -473,8 +473,8 @@ public abstract class DeserializationContext
             // they have precedence over global setting.
             if (Boolean.TRUE.equals(useInput)
                     || Boolean.TRUE.equals(optional)
-                    || (useInput == null || optional == null)
-                    && !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE)) {
+                    || ((useInput == null || optional == null)
+                            && !isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_INJECT_VALUE))) {
                 return JacksonInject.Value.empty();
             }
             throw missingInjectableValueException(String.format(
