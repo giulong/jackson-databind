@@ -91,7 +91,8 @@ public class PropertyValueBuffer
     protected PropertyValue _anyParamBuffered;
 
     /**
-     * Indexes properties that are injectable, if any; {@code null} if none.
+     * Indexes properties that are injectable, if any; {@code null} if none,
+     * cleared as they are injected.
      *
      * @since 2.21
      */
@@ -328,6 +329,12 @@ public class PropertyValueBuffer
         }
     }
 
+    /**
+     * Method called to inject value for given property, possibly overriding
+     * assigned (from input) value.
+     *
+     * @since 2.21
+     */
     private void _inject(final SettableBeanProperty prop) throws JsonMappingException {
         final JacksonInject.Value injection = prop.getInjectionDefinition();
 
@@ -341,7 +348,6 @@ public class PropertyValueBuffer
                 if (value != JacksonInject.Value.empty()) {
                     int ix = prop.getCreatorIndex();
                     _creatorParameters[ix] = value;
-                    _injectablePropIndexes.clear(ix);
                 }
             }
         }
