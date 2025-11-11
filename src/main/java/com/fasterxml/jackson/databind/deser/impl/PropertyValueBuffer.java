@@ -91,23 +91,6 @@ public class PropertyValueBuffer
     protected PropertyValue _anyParamBuffered;
 
     /**
-<<<<<<< HEAD
-     * Bitflag used to track already injected parameters when number of parameters is
-     * less than 32 (fits in int).
-     *
-     * @since 2.21
-     */
-    protected int _paramsInjected;
-
-    /**
-     * Bitflag used to track already injected parameters when number of parameters is
-     * 32 or higher.
-     *
-     * @since 2.21
-     */
-    protected final BitSet _paramsInjectedBig;
-
-    /**
      * Indexes properties that are injectable, if any; {@code null} if none.
      *
      * @since 2.21
@@ -134,10 +117,8 @@ public class PropertyValueBuffer
         _creatorParameters = new Object[paramCount];
         if (paramCount < 32) {
             _paramsSeenBig = null;
-            _paramsInjectedBig = null;
         } else {
             _paramsSeenBig = new BitSet();
-            _paramsInjectedBig = new BitSet();
         }
         // Only care about Creator-bound Any setters:
         if ((anyParamSetter == null) || (anyParamSetter.getParameterIndex() < 0)) {
@@ -251,7 +232,8 @@ public class PropertyValueBuffer
         }
 
         if (_context.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)) {
-            for (int ix = 0; ix < props.length; ++ix) {
+            final int len = _creatorParameters.length;
+            for (int ix = 0; ix < len; ++ix) {
                 if (_creatorParameters[ix] == null) {
                     SettableBeanProperty prop = props[ix];
                     _context.reportInputMismatch(prop,
@@ -261,15 +243,12 @@ public class PropertyValueBuffer
             }
         }
 
-        if (_paramsInjectedBig == null) {
-            for (int ix = 0; ix < _creatorParameters.length; ++ix) {
-                if ((_paramsInjected & (1 << ix)) == 0) {
-                    _inject(props[ix]);
-                }
-            }
-        } else {
-            for (int ix = 0; (ix = _paramsInjectedBig.nextClearBit(ix)) < _creatorParameters.length; ++ix) {
+        if (_injectablePropIndexes != null) {
+            int ix = _injectablePropIndexes.nextSetBit(0);
+
+            while (ix >= 0) {
                 _inject(props[ix]);
+                ix = _injectablePropIndexes.nextSetBit(ix + 1);
             }
         }
 
@@ -367,10 +346,8 @@ public class PropertyValueBuffer
     }
 
     private void _trackInjected(final SettableBeanProperty prop) {
-        if (_paramsInjectedBig == null) {
-            _paramsInjected |= 1 << prop.getCreatorIndex();
-        } else {
-            _paramsInjectedBig.set(prop.getCreatorIndex());
+        if (_injectablePropIndexes != null) {
+            _injectablePropIndexes.clear(prop.getCreatorIndex());
         }
     }
 
