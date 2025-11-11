@@ -231,6 +231,15 @@ public class PropertyValueBuffer
             _creatorParameters[_anyParamSetter.getParameterIndex()] = _createAndSetAnySetterValue();
         }
 
+        // [databind#1381] handle inject-only (useInput = false) properties
+        if (_injectablePropIndexes != null) {
+            int ix = _injectablePropIndexes.nextSetBit(0);
+            while (ix >= 0) {
+                _inject(props[ix]);
+                ix = _injectablePropIndexes.nextSetBit(ix + 1);
+            }
+        }
+
         if (_context.isEnabled(DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES)) {
             final int len = _creatorParameters.length;
             for (int ix = 0; ix < len; ++ix) {
@@ -240,15 +249,6 @@ public class PropertyValueBuffer
                             "Null value for creator property '%s' (index %d); `DeserializationFeature.FAIL_ON_NULL_CREATOR_PROPERTIES` enabled",
                             prop.getName(), props[ix].getCreatorIndex());
                 }
-            }
-        }
-
-        if (_injectablePropIndexes != null) {
-            int ix = _injectablePropIndexes.nextSetBit(0);
-
-            while (ix >= 0) {
-                _inject(props[ix]);
-                ix = _injectablePropIndexes.nextSetBit(ix + 1);
             }
         }
 
@@ -292,7 +292,8 @@ public class PropertyValueBuffer
         // First: do we have injectable value?
         Object injectableValueId = prop.getInjectableValueId();
         if (injectableValueId != null) {
-            _trackInjected(prop);
+            // 10-Nov-2025: [databind#1381] Is this needed?
+            _injectablePropIndexes.clear(prop.getCreatorIndex());
             return _context.findInjectableValue(prop.getInjectableValueId(),
                     prop, null, null, null);
         }
@@ -338,16 +339,11 @@ public class PropertyValueBuffer
                         prop, prop.getMember(), injection.getOptional(), useInput);
 
                 if (value != JacksonInject.Value.empty()) {
-                    _trackInjected(prop);
-                    _creatorParameters[prop.getCreatorIndex()] = value;
+                    int ix = prop.getCreatorIndex();
+                    _creatorParameters[ix] = value;
+                    _injectablePropIndexes.clear(ix);
                 }
             }
-        }
-    }
-
-    private void _trackInjected(final SettableBeanProperty prop) {
-        if (_injectablePropIndexes != null) {
-            _injectablePropIndexes.clear(prop.getCreatorIndex());
         }
     }
 
@@ -430,6 +426,7 @@ public class PropertyValueBuffer
                 _paramsSeenBig.set(ix);
                 if (--_paramsNeeded <= 0) {
                     // 29-Nov-2016, tatu: But! May still require Object Id value
+                    return (_objectIdReader == null) || (_idValue != null);
                 }
             }
         }
